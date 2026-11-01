@@ -1,0 +1,776 @@
+Games Supported by the KOBA Framework
+
+The framework is designed to onboard any multiplayer game that offers dedicated servers, with the strongest and richest support for titles that allow server-side modding. Below is the current coverage, grouped by technical archetype.
+
+Fully Specified / High-Fidelity Support (Detailed Adapters Exist)
+
+These games have concrete extraction methods, identity mapping, and connector patterns already documented:
+
+
+Game
+Archetype
+Primary Method
+Identity
+Bidirectional Control
+
+ARK: Survival Ascended
+Modded (Ark Server API)
+Plugins / hooks
+SteamID64 + EOS
+Strong (plugin + RCON)
+
+Rust
+Modded (Oxide / Carbon)
+Plugins
+SteamID64
+Strong
+
+Minecraft (Paper / Spigot / Purpur)
+Modded (Bukkit API)
+Plugins + optional REST
+UUID
+Strong
+
+Palworld
+Native REST
+Official REST API
+Steam / platform IDs
+Good (REST endpoints)
+
+DayZ
+Log + DB
+.ADM log tailing + MySQL
+SteamID64 + DayZ GUID
+Limited (mostly read)
+
+Enshrouded
+Log
+Server log tailing
+SteamID64
+Very limited (no RCON yet)
+
+Counter-Strike 2
+Competitive + Log/RCON
+Match APIs / Faceit webhooks + logs + GOTV
+SteamID64
+Strong on community servers
+
+Valorant
+Competitive
+Faceit / Tracker.gg / Riot match history
+Riot PUUID + Riot ID
+Mostly read-only
+
+
+
+Broadly Supported via the Universal Modded Path
+
+Any game that has a working server-side modding framework can be onboarded by writing a thin KOBA connector plugin/mod. Common frameworks already covered by the blueprint:
+
+• Oxide / uMod / Carbon → Rust and other Oxide-compatible titles
+• UE4SS (Lua/C++) → Unreal Engine games (SCUM, The Isle EVRIMA, some Palworld ports, etc.)
+• BepInEx / MelonLoader → Many Unity games (Valheim, Lethal Company, etc.)
+• Paper / Spigot / Bukkit → Minecraft ecosystem
+• RocketMod / OpenMod → Unturned
+• SourceMod / Metamod → Source engine community servers
+• Harmony runtime patching → Any C# dedicated server that loads it
+
+Additional Games That Fit Naturally
+
+These are not fully detailed yet but fall cleanly into existing archetypes and can be added quickly:
+
+• Valheim (BepInEx)
+• SCUM (UE4SS)
+• Unturned (RocketMod / OpenMod)
+• 7 Days to Die (modding + logs)
+• Satisfactory (Satisfactory Mod Loader)
+• Other Unreal or Unity survival/sandbox titles that ship with or accept server-side script extenders
+
+Not Yet Directly Supported (or Limited)
+
+• Pure client-authoritative or closed ecosystem games with no dedicated server modding and no public API (most live-service titles without community server support).
+• Console-only sessions without a PC dedicated server or official match API.
+
+───
+
+Summary
+
+• Explicitly detailed today: ARK: Survival Ascended, Rust, Minecraft, Palworld, DayZ, Enshrouded, CS2, Valorant.
+• Ready for rapid onboarding: Any title with a mature server modding framework (Oxide, UE4SS, BepInEx, Paper, etc.).
+• Architecture goal: One reusable connector blueprint + per-game/per-framework adapter so new moddable games can be added without changing the core KOBA platform.
+
+Universal Modded-Server Framework for KOBA
+
+The framework is now generalized so any multiplayer game that supports server-side modding (plugins, script extenders, Harmony patches, UE4SS, BepInEx, etc.) can be onboarded through a single, reusable pattern. Specific titles (ARK, Rust, Minecraft, CS2, Valheim, SCUM, Unturned, etc.) become concrete instances of this pattern rather than one-off integrations.
+
+───
+
+1. Categorization of Server Data Extraction (Generalized)
+
+A. Modded / Framework-Driven Servers (Primary Path for Any Moddable Game)
+
+This is the preferred archetype whenever the game exposes (or can be extended with) a server-side scripting/plugin layer.
+
+Common technical layers observed across the industry
+
+
+Layer
+Typical Technology
+Examples of Games
+
+Plugin framework
+Oxide / uMod, Carbon, RocketMod / OpenMod, SourceMod / Metamod
+Rust, Unturned, CS2 (community), older Source titles
+
+Script extender / injector
+UE4SS (Lua), BepInEx, MelonLoader, SKSE-style
+ARK (via Ark Server API), SCUM, Palworld (UE4SS ports), Valheim, many Unity titles
+
+Harmony / runtime patching
+HarmonyLib (C#)
+Rust (built-in), many C# servers
+
+Native engine hooks
+Game-provided API or official plugin system
+Minecraft (Paper/Spigot/Bukkit), some newer titles with first-party mod APIs
+
+
+
+Universal extraction method
+
+1. Install the game’s standard modding framework (or the lightest possible injector that can run code inside the dedicated server process).
+2. Deploy a thin KOBA Connector plugin / mod written for that framework.
+3. The connector registers for the framework’s standard event surface: 
+◦ Player connect / disconnect / spawn
+◦ Death / damage / kill
+◦ Inventory / economy / currency changes
+◦ Chat / commands
+◦ Custom game events (tames, raids, objectives, etc.)
+4. On each event the connector: 
+◦ Extracts the platform identity (SteamID64, EOS ID, UUID, XUID, …)
+◦ Builds a canonical KOBA event
+◦ Signs and asynchronously POSTs it to the KOBA ingest endpoint
+
+This pattern works for any game that already has a working server-side modding community. New games are onboarded by writing one small adapter plugin against the existing framework rather than inventing a new telemetry pipeline.
+
+Efficiency ranking inside this archetype
+• Highest: Native framework event hooks (zero polling, full object access).
+• High: Harmony / UE4SS / BepInEx hooks that can reach the same events.
+• Acceptable fallback: Periodic polling of player lists + differential detection when the framework lacks rich events.
+
+B–D. Other Archetypes (Unchanged but Secondary)
+
+• Native REST/Web endpoints (Palworld-style)
+• Log-tailing + database listeners
+• Competitive match APIs (CS2 Faceit, Valorant Tracker, etc.)
+
+When a game supports modding, the Modded path is always preferred over pure log or external API approaches.
+
+───
+
+2. Cross-Network Player Identity Extraction (Unchanged Core + Universal Rule)
+
+The identity resolution layer stays the same. The only addition is a framework-agnostic contract:
+
+Every KOBA connector plugin must expose a single function:
+
+GetCanonicalPlayerId(playerObject) → { platform: string, id: string }
+
+
+The connector implementation for each game/framework fills this in with the correct field (SteamID64, EOS Product User ID, Minecraft UUID, etc.). The rest of the pipeline never cares which game produced the ID.
+
+───
+
+3. Bidirectional Automation Protocols (Generalized)
+
+For any moddable game the preferred write path is:
+
+1. Custom framework command / API call exposed by the KOBA connector itself
+ (e.g. KOBA.GiveItem, KOBA.Broadcast, KOBA.WhitelistAdd).
+ This is the most reliable and richest method.
+
+2. RCON / native admin console (when the game or framework already supports it).
+
+3. HTTP endpoint registered by the connector (many modern frameworks allow plugins to spin up a local HTTP listener).
+
+Order of preference is always: Connector-native API → Framework command → RCON → external match API.
+
+───
+
+4. Dynamic Data Normalization Strategy (Unchanged)
+
+The 4-part routing key and canonical event schema remain identical.
+ Game-specific adapters only translate the raw events emitted by the connector into the universal types (session.join, combat.kill, economy.delta, milestone.complete, etc.).
+
+───
+
+Deliverable 1: The Telemetry Matrix (Now Framework-Centric)
+
+
+Game / Family
+Modding Framework
+KOBA Connector Approach
+Primary Events
+
+Any Oxide/Carbon game (Rust, etc.)
+Oxide or Carbon
+Single C# plugin using standard hooks
+Connect, death, economy, raids
+
+Any UE4SS-capable Unreal game (ARK, SCUM, Palworld ports, The Isle, etc.)
+UE4SS (Lua or C++)
+Lua/C++ mod that hooks BeginPlay, player controllers, damage
+Join/leave, combat, inventory
+
+Any BepInEx / MelonLoader Unity game (Valheim, Lethal Company, etc.)
+BepInEx
+C# plugin with Harmony patches or BepInEx events
+Session, death, progression
+
+Minecraft (Paper/Spigot/Purpur)
+Bukkit/Paper API
+Standard Java plugin
+Join/quit, deaths, economy
+
+Source / CS2 community
+SourceMod / Metamod or custom
+Plugin or HTTP log + RCON
+Kills, rounds, joins
+
+Unturned
+RocketMod / OpenMod
+.NET plugin
+Connect, economy, combat
+
+Future moddable title
+Whatever the community adopts
+Thin adapter against that framework’s event surface
+Same canonical set
+
+
+
+Any new game that gains a stable server-side modding solution is added simply by creating the corresponding thin connector.
+
+───
+
+Deliverable 2: Universal Game-Connector Blueprint (Framework-Agnostic)
+
+KOBA Connector (language-agnostic template)
+
+1. INIT
+   - Detect or be told which framework is present
+   - Load KOBA config (API URL, server_id, HMAC secret, region tag)
+   - Register for the framework’s standard player & world events
+
+2. IDENTITY
+   - Implement GetCanonicalPlayerId(player) for this game
+   - Cache mapping for the lifetime of the session
+
+3. EVENT → CANONICAL
+   - On every relevant framework event:
+       extract identity + relevant payload
+       map to one of the universal event types
+       attach 4-part routing key [Game]-[Platform]-[Region]-[Scope]
+
+4. SIGN & SEND
+   - HMAC-SHA256(payload + timestamp + server_id)
+   - Async non-blocking POST (or buffered queue)
+   - Local durable buffer for offline resilience
+
+5. BIDIRECTIONAL
+   - Expose framework commands or a local HTTP endpoint
+   - Map inbound KOBA actions (give item, broadcast, whitelist, kick)
+     onto the framework’s native APIs
+
+6. HEALTH
+   - Periodic heartbeat with player count + connector version
+
+
+The same blueprint is used whether the underlying technology is C#, Lua, Java, or C++.
+
+───
+
+Deliverable 3: Onboarding Technical Requirement Checklist (Universal for Moddable Games)
+
+Server provider must provide
+
+[  ]  Ability to install the game’s standard modding framework (Oxide, Carbon, UE4SS, BepInEx, Paper, etc.)
+[  ]  Write access to the plugins / mods / Mods folder
+[  ]  Permission to load a new plugin/mod and reload it without full server wipe
+[  ]  Outbound HTTPS to KOBA ingest endpoints
+[  ]  (Optional but recommended) RCON or local HTTP port firewalled to management network only
+[  ]  Read access to any log directories the connector may also tail as a safety net
+[  ]  Documented server_id / cluster / region tags
+
+KOBA side
+
+[  ]  One thin connector binary/script per supported framework (or a multi-framework connector that auto-detects)
+[  ]  Per-game identity mapper and event translator
+[  ]  Standard onboarding test: player join → leave → one combat/economy event → confirmed receipt in KOBA
+
+───
+
+Result
+
+Any game that already has (or later gains) a working server-side modding ecosystem can be onboarded to KOBA by:
+
+1. Confirming the modding framework.
+2. Dropping in the corresponding KOBA connector plugin/mod.
+3. Satisfying the short checklist above.
+
+Updated Framework – CS2 & Valorant Fully Integrated
+The following expands the original research with complete, production-ready coverage for Counter-Strike 2 and Valorant. Both titles are treated as first-class citizens across all four research pillars and the three deliverables.
+1. Categorization of Server Data Extraction (Updated)
+Competitive Session Match APIs (Expanded)
+CS2 and Valorant primarily live in this archetype, with secondary log/RCON paths available for community/dedicated servers.
+Counter-Strike 2
+Primary (tournament / Faceit / hosted matches): Match orchestration APIs + webhooks.
+DatHost-style Match API (and similar providers): Create match with player list (SteamID64 + team), then receive webhooks for match_started, round_end, match_ended, player_connected, player_disconnected, player_votekicked. Payload includes full scoreboard, kills, ADR-style metrics, and SteamID64.​
+dathost.readme
+Faceit Data API: Player history, stats, Elo, bans (/players/{id}/history, /players/{id}/games/cs2/stats).
+Third-party aggregators (csstats.gg, CS2.SPACE, GGScore, etc.) for career ADR, K/D, HLTV rating, Premier rank.
+Secondary (community / dedicated servers):
+Source RCON (status, kickid, say, map changes).
+Log streaming: logaddress_add_http (HTTP POST of log lines) or sv_logfile 1 + tail. Parsers extract kills, assists, bomb events, player joins with SteamID.
+GOTV / CSTV demos (tv_enable 1, tv_autorecord 1) for post-match deep analysis (demo parsers yield precise ADR, utility, clutches).​
+Shockbyte
+Most efficient live interception: Webhook-driven match APIs for competitive; HTTP log address + RCON for persistent community servers.
+Valorant
+Primary: External / client-side APIs (no public dedicated-server SDK from Riot).
+Official-ish paths: Riot client local API (lockfile-based, localhost only) for live lobby / match state; remote match-history endpoints (/match-history/v1/history/{puuid}) requiring player auth tokens.
+Faceit (where available) + Tracker.gg / HenrikDev-style APIs: Match history, ACS, K/D, headshot %, agent/map breakdowns, MMR.
+Tournament broadcast tools (Spectra, observer clients) that ingest real-time observer data and expose WebSocket/REST for live stats.
+Secondary: No native RCON or public dedicated-server log format. Community solutions rely on client-side watchers or third-party match archives.
+Most efficient live interception: Player-authorized match history + Faceit/Tracker aggregation for post-match; observer/WebSocket feeds for live tournament telemetry. Real-time server-side interception is limited compared with CS2.
+Both games therefore map cleanly to the Competitive Session Match APIs archetype, with CS2 also supporting a hybrid Log + RCON path for self-hosted servers.
+2. Cross-Network Player Identity Extraction (Updated)
+Game
+Primary Identity
+Secondary / Cross-Platform
+Resolution Notes
+CS2
+SteamID64
+SteamID3 / SteamID2 (legacy logs), Faceit player ID
+status RCON and log lines emit SteamID; Faceit links via Steam. Convert formats with standard math or Steam Web API.
+Valorant
+Riot PUUID + Riot ID (Name#Tag)
+Platform-specific (Xbox/PSN for console)
+PUUID is permanent. Resolve Riot ID → PUUID via Riot endpoints or Tracker/HenrikDev. Map to KOBAid after player opts in / links account.
+Connector pattern for both:
+Extract raw ID at source (webhook payload, RCON status, log line, or API response).
+Normalize (prefer SteamID64 for CS2, PUUID for Valorant).
+HMAC-sign and POST to KOBA identity service.
+Service performs lookup/create of KOBAid and stores the platform mapping.
+3. Bidirectional Automation Protocols (Updated)
+CS2
+RCON remains the workhorse: kickid <steamid>, banid, say, changelevel, whitelist-style commands via plugins.
+Match APIs often expose mid-match player add/remove endpoints.
+GOTV can be controlled via RCON (tv_record, tv_stoprecord).
+Limitations of classic Source RCON still apply (response size, concurrent commands); prefer HTTP log address + a thin local proxy for richer control.
+Valorant
+No public server-side RCON or admin HTTP API for dedicated instances.
+Bidirectional actions are limited to:
+Tournament platforms that control lobby creation.
+Client-side tools (local lockfile API) that can only affect the local player.
+External services that issue invites or move players via Riot’s party endpoints (requires elevated / partner access).
+Practical KOBA approach: Treat Valorant as mostly read-only for live actions; use webhooks or post-match APIs for stats and issue Discord/web notifications rather than in-game commands.
+Comparison summary:
+CS2 → RCON + Match API write endpoints (full bidirectional).
+Valorant → Primarily inbound telemetry; outbound limited to platform-level orchestration.
+4. Dynamic Data Normalization Strategy (Updated)
+Canonical event types already cover competitive metrics. Game-specific adapters:
+CS2 adapter examples
+combat.kill, combat.assist, combat.death
+combat.adr (Average Damage per Round)
+combat.rating (HLTV-style)
+utility.flash_assist, utility.smoke, etc.
+match.round_end, match.ended (with score, map, duration)
+Economy is minimal (buy events if logged).
+Valorant adapter examples
+combat.kill, combat.death, combat.acs (Average Combat Score)
+combat.headshot_pct
+agent.pick, agent.ability_use
+match.round_end, match.ended (with spike plant/defuse, site)
+Rank / RR delta as progression.mmr_delta
+Routing key examples:
+cs2-steam-eu-west-faceit-level10
+cs2-steam-na-east-premier-weekly
+valorant-riot-eu-central-competitive-act
+valorant-riot-na-west-tournament-live
+Deliverable 1: The Telemetry Matrix (Updated)
+Game
+Archetype
+Primary Extraction Method
+Key Events Captured
+Notes
+CS2
+Competitive + Log/RCON
+Match API webhooks + Faceit + HTTP logs / RCON / GOTV demos
+Join/leave, kills, ADR, rating, round/match end, utility
+SteamID64 native; richest on hosted match platforms
+Valorant
+Competitive Session
+Faceit / Tracker.gg / HenrikDev / Riot match-history + observer feeds
+Match history, ACS, K/D, HS%, agent/map stats, MMR
+PUUID + Riot ID; limited live server-side hooks
+ARK: Survival Ascended
+Modded/Framework
+Ark Server API plugins
+Join/leave, tames, deaths, tribe, kills
+EOS + Steam
+Rust
+Modded/Framework
+Oxide/Carbon plugin
+Join/leave, deaths, economy, raids
+SteamID64
+Minecraft (Paper)
+Modded/Framework
+Plugin events + REST
+Join/quit, deaths, economy
+UUID
+Palworld
+Native REST
+Official REST API
+Players, level, location, buildings
+Basic Auth
+DayZ
+Log/DB
+.ADM tail + MySQL
+Connect, damage, kills, build
+SteamID + GUID
+Enshrouded
+Log
+Server log tail
+Join/leave (SteamID64)
+No RCON yet
+Deliverable 2: Universal Game-Connector Blueprint (CS2 & Valorant Extensions)
+CS2 connector additions
+• Register HTTP log receiver (logaddress_add_http) or tail sv_logfile
+• Optional RCON client for status / kick / say
+• Subscribe to Match API webhooks (or poll match endpoint)
+• Parse GOTV .dem files offline for high-fidelity ADR / utility when needed
+• Emit canonical events with SteamID64 → KOBAid mapping
+Valorant connector additions
+• Poll or webhook from Faceit / Tracker / HenrikDev (player-authorized)
+• Optional local lockfile watcher for live lobby (single-machine only)
+• For tournaments: ingest Spectra / observer WebSocket feed
+• Map PUUID / Riot ID → KOBAid
+• Treat most actions as post-match; live bidirectional limited
+Signing, buffering, retry, and 4-part routing remain identical to the original blueprint.
+Deliverable 3: Onboarding Technical Requirement Checklist (Additions)
+For CS2 servers / match hosts
+[ ] RCON password set and firewalled (TCP same port as game or dedicated)
+[ ] logaddress_add_http pointed at KOBA collector or log directory readable
+[ ] GOTV enabled if demo analysis is required (tv_enable 1)
+[ ] Match API / Faceit API keys if using hosted competitive platforms
+[ ] GSLT (Game Server Login Token) if the server must appear in the browser
+For Valorant integrations
+[ ] Player opt-in / account linking flow (Riot ID or PUUID)
+[ ] API keys for Faceit / Tracker.gg / HenrikDev (or equivalent)
+[ ] For live tournament: observer client + Spectra (or similar) WebSocket endpoint
+[ ] No server file privileges required (client- or API-driven)
+All previous security, firewall, and operational items still apply.
+Summary of CS2 vs Valorant in the KOBA framework
+CS2 is a high-fidelity, bidirectional citizen: webhooks + RCON + logs + demos give near-complete live and post-match telemetry and control.
+Valorant is a strong read-oriented citizen: excellent post-match and ranked stats via established APIs, but live server-side interception and write actions are constrained by Riot’s closed ecosystem. Tournament observer feeds close the live gap for organized play.
+Both titles now sit fully inside the Telemetry Matrix, identity resolution, automation comparison, normalization schema, connector blueprint, and onboarding checklist. The same adapter pattern used for Rust/ARK/Palworld extends cleanly to these competitive titles.
+Cross-Game Telemetry & API Integration Framework for the KOBA Platform
+
+Principal Platform Architect analysis of server data extraction archetypes, identity resolution, bidirectional control, and normalization for arbitrary multiplayer game onboarding.
+
+───
+
+1. Categorization of Server Data Extraction
+
+Multiplayer games fall into four primary technical archetypes. For each, the most efficient live interception of player actions (joins/leaves, combat, economy, milestones) is listed.
+
+A. Modded / Framework-Driven Servers
+Examples: ARK: Survival Ascended (Ark Server API / ASA plugins), Rust (Oxide/uMod or Carbon + Harmony), Minecraft (Spigot/Paper plugins).
+
+• Primary method: Native server-side plugin or Harmony hook that registers game-engine events. 
+◦ ARK ASA: Ark Server API plugins hook AShooterGameMode login/logout, tames, deaths, tribe changes, inventory. Plugins such as PlayerData or ServerAnalytics persist sessions, kills, tames, and IP history to MySQL or push via HTTP.
+◦ Rust: Oxide/Carbon plugins use hooks OnPlayerConnected, OnPlayerDisconnected, OnEntityDeath, Economics balance changes, raid events. Single-file plugins (e.g., TopStats) buffer and POST events; other plugins call into a shared tracker.
+◦ Minecraft (Paper/Spigot): @EventHandler on PlayerJoinEvent, PlayerQuitEvent, EntityDeathEvent, economy plugins, etc. Optional REST plugins expose endpoints or fire webhooks.
+• Efficiency: Event-driven (zero polling), richest data (full inventory, coordinates, damage sources), lowest latency. Requires server owner to install the KOBA connector plugin.
+
+B. Native REST / Web Endpoint Servers
+Example: Palworld.
+
+• Primary method: Poll or long-poll the official REST API (enabled via RESTAPIEnabled=True, port 8212 by default). 
+◦ Key endpoints: GET /v1/api/players (name, accountName, playerId, userId, IP, ping, location, level, building_count), GET /v1/api/metrics, GET /v1/api/info, GET /v1/api/game-data (requires -enable-gamedata-api). Write endpoints for announce/kick/ban/save.
+• Efficiency: Clean structured JSON, Basic Auth. Poll every 5–15 s for joins/leaves; delta detection yields events. No combat/economy detail without deeper game-data parsing. Keep API on LAN or reverse-proxy only (official warning against public exposure).
+
+C. Log-Tailing & Database Listeners
+Examples: DayZ (.ADM admin logs + optional MySQL), Enshrouded (server logs), some older ARK setups.
+
+• Primary method: 
+◦ DayZ: Tail .ADM files (profiles folder, -adminlog). Events include connect/disconnect (with DayZ GUID / SteamID), chat, damage (hitzone, weapon, range), kills, unconsciousness, placement, build actions. Configurable via serverDZ.cfg (adminLogPlayerHitsOnly, adminLogBuildActions, etc.). Optional MySQL character_data snapshots or modern mods (LogZ) that emit NDJSON.
+◦ Enshrouded: Tail enshrouded_server.log (or logs/). Lines such as [online] Session accepted with peer (id 7656119…) give SteamID64 joins; “Removed Peer” for leaves. No native RCON or rich event API yet; feature requests exist.
+• Efficiency: Near-real-time with inotify/tail -F + structured parser. Lower fidelity than plugins (no guaranteed economy or inventory). Database listeners add character snapshots for progression.
+
+D. Competitive Session Match APIs
+Examples: CS2 / Valorant via Faceit, third-party match APIs, tournament webhooks.
+
+• Primary method: External API + optional webhooks. 
+◦ Faceit: Player history, stats, bans, hubs (/players/{id}/history, /players/{id}/games/{game}/stats).
+◦ CS2-specific: Hosted match APIs with webhooks for match_started, match_ended, round_end, player_connected, etc.; payload includes SteamID64, kills, ADR-style metrics. Demo parsers or third-party services (csapi, GGScore, etc.) for pro/public matches.
+• Efficiency: Session-level (not continuous server telemetry). Ideal for competitive leaderboards; combine with server-side logging if dedicated community servers are used.
+
+Interception summary: Prefer framework plugins where available (richest, lowest latency). Fall back to native REST polling, then robust log parsers, then external match APIs.
+
+───
+
+2. Cross-Network Player Identity Extraction
+
+Standard platform keys and secure resolution into a unified KOBAid:
+
+
+Platform
+Identifier
+Typical Source
+Resolution Notes
+
+Steam
+SteamID64 (17-digit, starts 7656119…)
+Server logs, plugins, RCON, status
+Canonical; convert from SteamID2/3/Hex via local math or Steam Web API. Never changes.
+
+Epic (EOS)
+EOS Product User ID / Account ID
+ARK ASA, some Unreal titles
+Returned by EOS SDK or server API; map via Epic account linking if available.
+
+Xbox Live
+XUID (64-bit) / Gamertag
+Bedrock Minecraft, console cross-play
+Derive UUID for Bedrock; resolve Gamertag → XUID via Xbox services or Microsoft Graph where permitted.
+
+PlayStation Network
+PSN Online ID / Account ID
+Console servers
+Limited public APIs; often only available via official partner or in-game session data.
+
+Minecraft
+UUID (dashed or undashed)
+Paper/Spigot Player.getUniqueId()
+Permanent; resolve name ↔ UUID via Mojang API. Bedrock uses XUID-derived UUID.
+
+DayZ
+DayZ GUID + SteamID64
+.ADM logs
+Both present; SteamID64 preferred for cross-platform mapping.
+
+
+
+Secure connector pattern:
+1. Extract raw ID at the earliest point (plugin hook, log line, REST field).
+2. Normalize to a canonical form (prefer SteamID64 or UUID).
+3. Sign the payload with a server-specific HMAC or JWT (KOBA-issued key).
+4. POST to KOBA identity service which performs: 
+◦ Lookup / create KOBAid.
+◦ Optional secondary verification (Steam Web API ownership proof, Epic linking).
+◦ Store mapping with timestamp and source server.
+5. Never expose private tokens client-side; all resolution stays server-side.
+
+───
+
+3. Bidirectional Automation Protocols (Web-to-Game)
+
+
+Mechanism
+Strengths
+Limitations
+Best Use
+
+RCON (Source-style TCP or WebRCON)
+Ubiquitous (Rust, Minecraft, ARK, Palworld, many others); simple command execution (kick, ban, say, whitelist, give item).
+No structured events; response size limits (~4 KB); encoding issues; no native encryption; concurrent command fragility; some games lack full command surface.
+Broadcasts, whitelist updates, simple admin actions.
+
+Native HTTP POST / REST
+Structured JSON, auth (Basic/JWT/HMAC), bidirectional (read + write), richer actions (inventory push, precise player targeting). Palworld example: /announce, /kick, /ban.
+Must be enabled and firewalled; not present on every title.
+Preferred when available; pair with polling for telemetry.
+
+Custom Framework Commands
+Full engine access (Oxide Call, ArkApi hooks, Paper command API). Can inject items directly into inventory, trigger custom events.
+Requires the KOBA plugin to be installed and trusted.
+Highest fidelity transactional actions (item grants, economy adjustments).
+
+
+
+Recommendation: Prefer native HTTP or plugin-exposed endpoints. Use RCON as fallback with a local proxy that adds TLS, rate-limiting, and command allow-listing. Always authenticate outbound webhooks from KOBA with short-lived signed tokens.
+
+───
+
+4. Dynamic Data Normalization Strategy
+
+Unified 4-part routing payload:
+[Game]-[Platform]-[Region]-[LeaderboardScope]
+
+Example: rust-steam-eu-west-weekly-pvp, palworld-steam-na-east-alltime-economy, cs2-faceit-global-season-adr.
+
+Architecture:
+1. Ingest layer (connector): Emits raw game events with original schema + extracted identity.
+2. Normalizer service: 
+◦ Maps game-specific metrics via per-game adapters (Rust scrap → economy.scrap, Palworld level/buildings → progression.level + progression.buildings, CS2 ADR → combat.adr).
+◦ Applies unit conversion, time-window aggregation, and anti-cheat filters.
+◦ Outputs canonical event types: session.join, session.leave, combat.kill, economy.delta, milestone.complete, progress.stat.
+3. Router: Uses the 4-part key to shard into leaderboards, regional stores, and real-time feeds.
+4. Schema (language-agnostic example):
+json
+{
+  "koba_id": "uuid",
+  "raw_ids": {"steam": "7656…", "eos": "…"},
+  "game": "rust",
+  "platform": "steam",
+  "region": "eu-west",
+  "scope": "weekly-pvp",
+  "event_type": "combat.kill",
+  "payload": {"victim_koba_id": "…", "weapon": "ak47", "distance": 42.5},
+  "ts": "2026-10-11T19:13:00Z",
+  "server_id": "cluster-01-map-a",
+  "sig": "hmac-sha256…"
+}
+
+
+Adapters are versioned and hot-reloadable so new games can be onboarded without core changes.
+
+───
+
+Deliverable 1: The Telemetry Matrix
+
+
+Game
+Archetype
+Primary Extraction Method
+Key Events Captured
+Notes
+
+ARK: Survival Ascended
+Modded/Framework
+Ark Server API plugins
+Join/leave, tames, deaths, tribe, kills, sessions
+Richest via plugins; EOS + Steam IDs
+
+Rust
+Modded/Framework
+Oxide/Carbon plugin
+Join/leave, deaths, economy, raids
+SteamID64 native; Economics API
+
+Minecraft (Paper/Spigot)
+Modded/Framework
+Plugin events + optional REST
+Join/quit, deaths, economy, milestones
+UUID primary
+
+Palworld
+Native REST
+Official REST API (poll)
+Players online, level, location, buildings
+Basic Auth; LAN only recommended
+
+DayZ
+Log/DB
+.ADM tail + optional MySQL/LogZ
+Connect, damage, kills, build
+SteamID + DayZ GUID
+
+Enshrouded
+Log
+Server log tail
+Join/leave (SteamID64)
+No RCON yet; limited depth
+
+CS2 / Valorant
+Competitive API
+Faceit / match webhooks + demo parsers
+Match start/end, ADR, K/D, rounds
+Session-oriented
+
+Generic Source titles
+RCON + logs
+RCON status + log parse
+Basic presence, chat
+Fallback
+
+
+
+───
+
+Deliverable 2: Universal Game-Connector Blueprint
+
+Language-agnostic template for a local server connector:
+
+1. INIT
+   - Load config: KOBA_API_URL, SERVER_ID, HMAC_SECRET, GAME_TYPE, AUTH_TOKENS
+   - Register platform-specific listeners:
+     - Plugin hooks (preferred)
+     - REST poller (interval configurable)
+     - Log tailer (inotify / FileSystemWatcher)
+     - Optional memory/Harmony hooks
+
+2. EVENT CAPTURE
+   - On raw event → extract identity (SteamID64 / UUID / EOS / …)
+   - Enrich with server context (map, region, tick)
+   - Buffer in memory queue (bounded, drop oldest under pressure)
+
+3. NORMALIZE & PACKAGE
+   - Apply game adapter → canonical event
+   - Attach 4-part routing key
+   - Add timestamp (UTC), sequence number
+
+4. SIGN & TRANSMIT
+   - Compute HMAC-SHA256 over payload + timestamp + server_id
+   - Async HTTP POST (or gRPC) to KOBA ingest endpoint
+   - Retry with exponential backoff + jitter; dead-letter queue for failures
+   - Optional local SQLite buffer for offline resilience
+
+5. BIDIRECTIONAL
+   - Expose local authenticated endpoint or listen for KOBA webhooks
+   - Map inbound commands to RCON / native HTTP / plugin Call
+   - Confirm execution and report result
+
+6. HEALTH
+   - Heartbeat every 30–60 s with player count, version, connector health
+   - Graceful shutdown flushes buffer
+
+
+Security: All outbound traffic TLS; secrets never logged; principle of least privilege on server file/DB access.
+
+───
+
+Deliverable 3: Onboarding Technical Requirement Checklist
+
+Server provider / admin must allocate:
+
+Security Tokens & Credentials
+[  ]  KOBA-issued API key / HMAC secret (rotated periodically)
+[  ]  Game-specific admin password (RCON, REST Basic Auth, plugin config)
+[  ]  Optional Steam Web API key / Epic credentials for identity enrichment
+[  ]  TLS certificates if exposing any local proxy
+
+Firewall / Network
+[  ]  Allow outbound HTTPS from game host to KOBA ingest endpoints
+[  ]  Restrict RCON / REST ports to localhost or private management VLAN (never public)
+[  ]  If reverse-proxy used, IP allow-list + mutual TLS preferred
+[  ]  Query / game ports remain as required by the title
+
+Server File / Process Privileges
+[  ]  Read access to log directories (.ADM, logs/, ArkApi.log, etc.)
+[  ]  Write access to plugin/config folders (Oxide plugins, Ark Server API plugins, Paper plugins)
+[  ]  Ability to install and load the KOBA connector plugin or Harmony mod
+[  ]  Read access to any required databases (DayZ MySQL character tables) with SELECT-only user
+[  ]  Restart or reload capability for plugins after install
+[  ]  Sufficient disk for local buffer / offline queue
+
+Operational
+[  ]  Documented server_id / cluster mapping and region tag
+[  ]  Monitoring of connector process (systemd, Docker healthcheck)
+[  ]  Agreement on data retention and GDPR/CCPA handling of player IDs
+[  ]  Test plan: join → leave → combat/economy event → verify KOBA receipt
+
+───
+
+This framework allows any of the listed (and future) titles to be onboarded by selecting the matching archetype adapter, deploying the corresponding connector, and satisfying the checklist. Priority should be given to plugin-based extraction for depth and reliability; REST and log paths provide rapid coverage for titles that lack modding support.

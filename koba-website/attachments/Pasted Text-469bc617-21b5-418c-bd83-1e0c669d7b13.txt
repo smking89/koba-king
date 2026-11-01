@@ -1,0 +1,21 @@
+Act as the Principal Infrastructure Engineer for KOBA.GAMES. We need to elevate our simulated "KOBA Pulse" prototype into a production-ready framework by migrating from hardcoded synthetic data arrays to a persistent database foundation with strict zero-trust server-side security. 
+
+Execute the following implementation steps cleanly in our workspace:
+
+1. DATABASE LAYOUT (PostgreSQL / Prisma or Raw SQL):
+Define the core database schemas required to power the production engine:
+- `players`: Store user identities, game account links, and a six-axis playstyle vector coordinates array (survival, tactical, length, clan, aggression, exploration).
+- `koba_scores`: Store game-specific normalized performance metrics, confidence intervals, and total activity indices rather than interchangeable raw statistics.
+- `servers`: Store server telemetry metadata, real-time concurrent player metrics, peak tracking flags, and fraud probability scores.
+- `boost_ledger`: Track live 10-Minute Boost activations, timestamps, remaining allocation balances, and campaign wallet attribution records.
+
+2. PRODUCTION-GRADE RANKING LOGIC EVOLUTION:
+Refactor our `KOBAPulseEngine` logic:
+- Replace simulated dictionaries with functions that query our new database structures.
+- Implement an automated "Cold-Start" fallback routine for new servers or players with low historical telemetry data.
+- Refactor the Multi-Action scoring loop to calculate strict mathematical distribution opportunities where paid boosts scale exposure weight, but organic relevance scores still dictate terminal click visibility.
+
+3. ZERO-TRUST SUBDOMAIN GATEWAY ENFORCEMENT:
+Write the server-side middleware authorization check function for our backend. It must run on the server side to ensure that any request originating from the public 'koba.games' client portal or the developer portal must pass a stateless JWT/token verification check before accessing any internal configuration state changes or global weight variables.
+
+Deliver the production-grade database model structures, the refactored engine code, and the authentication security middleware script framework.

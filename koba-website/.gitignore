@@ -1,0 +1,17 @@
+.neon
+node_modules/
+
+# secrets — never commit
+.env
+.env.*
+*.pem
+*.key
+
+# local build / tool caches
+.vercel/
+.tanstack/
+.freebuff/
+.node_modules.lock
+
+# self-referential archive (105 MB, over GitHub's 100 MB file limit)
+koba-platform-site.zip

@@ -1,0 +1,57 @@
+{
+  "title": "Normalized KOBA Event",
+  "description": "Game adapters map telemetry into this envelope. The route is Game, Platform, Region, LeaderboardScope. Game-specific numbers live in data_payload.metrics.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["route", "integration_metadata", "event_envelope", "data_payload"],
+  "properties": {
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["game", "platform", "region", "leaderboard_scope"],
+      "properties": {
+        "game": { "type": "string" },
+        "platform": { "enum": ["PC", "CONSOLE"] },
+        "region": { "enum": ["NA", "EU", "OC", "AS", "SA", "RU"] },
+        "leaderboard_scope": { "enum": ["GLOBAL", "REGION", "SERVER", "CLAN", "SEASON"] }
+      }
+    },
+    "integration_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["koba_server_id", "game_type", "payload_timestamp_utc"],
+      "properties": {
+        "koba_server_id": { "type": "string", "pattern": "^srv_[a-z0-9_]{4,48}$" },
+        "game_type": { "enum": ["RUST", "RUST_CONSOLE", "DAYZ", "ARK", "SEVEN_DAYS", "LOL", "VALORANT", "APEX", "CS2"] },
+        "payload_timestamp_utc": { "type": "integer" }
+      }
+    },
+    "event_envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_type", "cryptographic_signature", "fps_at_execution"],
+      "properties": {
+        "event_type": { "enum": ["COMBAT_KILL", "OBJECTIVE", "SESSION_JOIN", "MATCH_END", "WIPE"] },
+        "cryptographic_signature": { "type": "string", "pattern": "^0x[0-9a-fA-F]{16,64}$" },
+        "fps_at_execution": { "type": "number", "minimum": 1, "maximum": 240 }
+      }
+    },
+    "data_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_identity", "target_identity"],
+      "properties": {
+        "actor_identity": { "type": "string" },
+        "target_identity": { "type": "string" },
+        "weapon_used": { "type": "string", "pattern": "^[A-Z0-9_]{2,32}$" },
+        "is_headshot": { "type": "boolean" },
+        "combat_distance_meters": { "type": "number", "minimum": 0, "maximum": 2000 },
+        "metrics": {
+          "type": "object",
+          "maxProperties": 16,
+          "additionalProperties": { "type": ["string", "number", "boolean"] }
+        }
+      }
+    }
+  }
+}

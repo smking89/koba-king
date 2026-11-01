@@ -1,0 +1,14 @@
+System Design Prompt: Universal KOBA Game Telemetry Payload Specification
+Objective:
+Design a highly scalable, production-grade Universal JSON Payload Structure that allows any game supported by the platform (e.g., Rust PC, Rust Console, DayZ, ARK, CS2, Valorant) to securely transmit match, wipe, session, or real-time event telemetry data to the centralized ingestion API.
+Core Architectural Requirements:
+1. Top-Level Hierarchical Routing: The payload must explicitly include a 4-part architectural routing system mapping directly to the platform database schema: [Game]-[Platform]-[Region]-[LeaderboardScope].
+2. Strict Platform and Regional Boundaries: It must strictly enforce structural segmentation between PC and Console platforms. Regions must validate against the official platform definitions: NA (US/CA/MX), EU (Western/Eastern/Central Europe), OC (AU/NZ/Pacific), AS (East/Southeast Asia), SA (Brazil/Argentina/South America), and RU (Russia-dedicated node).
+3. Game-Agnostic Core with Polymorphic Extensions: The payload must feature a standardized "Envelope" containing invariant security, server metadata, and player identity arrays, paired with a polymorphic data block to handle highly variable game-specific metrics (e.g., Rust item notes/scrap counts vs. tactical session match statistics).
+4. Security & Validation Layer: Data transmission must accommodate the platform's multi-gate validation engine: Server ownership validation (via API keys/tokens linked to the server identity), cryptographic signature checking, sanity/anti-spoofing validation, and identity matching (resolving SteamID, Xbox Live Gamertags, or PSN IDs to a unified KOBAid).
+Expected Output Deliverables:
+• The JSON Schema Definition: A robust, clear JSON schema layout documenting mandatory versus optional root nodes.
+• Two concrete JSON Payload Examples:
+A. A Survival / Wipe-Based Example (e.g., Rust or DayZ event dispatching persistent telemetry).
+B. A Session / Match-Based Example (e.g., a CS2 or tactical shooter round-end report).
+• Database Ingestion Strategy: A brief layout explaining how the ingestion API processes the flexible metadata block to calculate the centralized KOBA Power Rating (KPR) without hardcoding individual game rules into the database core.

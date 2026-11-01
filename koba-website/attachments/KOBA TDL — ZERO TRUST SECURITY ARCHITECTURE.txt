@@ -1,0 +1,280 @@
+======================================================================
+KOBA TDL — ZERO TRUST SECURITY ARCHITECTURE
+
+KOBA MUST BE DESIGNED AS A ZERO-TRUST PLATFORM.
+
+NO INTERNAL SERVICE IS AUTOMATICALLY TRUSTED.
+
+NO FUNCTION MAY ASSUME THAT ANOTHER KOBA FUNCTION IS TRUSTWORTHY
+SIMPLY BECAUSE IT RUNS INSIDE KOBA INFRASTRUCTURE.
+
+EVERY SERVICE-TO-SERVICE COMMUNICATION MUST BE:
+
+1. AUTHENTICATED
+2. AUTHORIZED
+3. ENCRYPTED
+4. INTEGRITY PROTECTED
+5. VALIDATED
+6. SCOPE RESTRICTED
+7. REPLAY PROTECTED WHERE APPROPRIATE
+8. AUDITED
+
+======================================================================
+SERVICE ISOLATION
+
+Major KOBA capabilities MUST operate within explicit security
+boundaries.
+
+Examples:
+
+• Identity
+• Player profiles
+• Game integrations
+• Event ingestion
+• Event processing
+• Scoring
+• Rankings
+• Rivals
+• Challenges
+• Clans
+• Rewards
+• Fulfillment
+• Advertising
+• KOBA Coins
+• Payments
+• Notifications
+• Discord
+• Developer APIs
+• Analytics
+• Moderation
+• Staff administration
+
+Services MUST NOT receive unrestricted access to other services,
+databases, credentials, or network resources.
+
+======================================================================
+DEFAULT DENY
+
+All service-to-service communication is DENY BY DEFAULT.
+
+A service may communicate with another service ONLY when an explicit
+policy grants the required capability.
+
+Policies must define:
+
+SOURCE
+DESTINATION
+ACTION
+RESOURCE
+DATA SCOPE
+AUTHENTICATION REQUIREMENTS
+TOKEN REQUIREMENTS
+EXPIRATION
+RATE LIMIT
+AUDIT REQUIREMENTS
+
+======================================================================
+TEMPORARY CREDENTIALS
+
+Prefer short-lived, narrowly scoped credentials for privileged
+service-to-service operations.
+
+Credentials should:
+
+• expire automatically
+• be audience restricted
+• be action restricted
+• be resource restricted
+• be cryptographically authenticated
+• prevent replay where appropriate
+• never expose master credentials to downstream services
+
+Long-lived secrets must be minimized and securely managed.
+
+======================================================================
+ENCRYPTION
+
+KOBA MUST use encryption appropriate to the security boundary.
+
+Data in transit MUST use authenticated encrypted channels.
+
+Sensitive data at rest MUST be encrypted.
+
+Highly sensitive payloads may use additional application-level
+encryption when justified.
+
+Do not invent cryptographic algorithms.
+
+Use established, audited cryptographic primitives and protocols.
+
+Never implement custom cryptography merely for novelty.
+
+======================================================================
+INPUT SECURITY
+
+NOTHING ENTERS A KOBA SECURITY BOUNDARY WITHOUT VALIDATION.
+
+Validate:
+
+• identity
+• authentication
+• authorization
+• schema
+• types
+• size
+• encoding
+• permitted values
+• resource ownership
+• timestamps
+• replay protection
+• business rules
+
+Untrusted game telemetry MUST always be treated as untrusted input.
+
+======================================================================
+OUTPUT SECURITY
+
+NOTHING LEAVES A KOBA SECURITY BOUNDARY WITHOUT VALIDATION.
+
+Before transmission:
+
+• validate output schema
+• enforce data minimization
+• verify destination authorization
+• remove unauthorized fields
+• classify sensitive data
+• encrypt the communication
+• record security-relevant activity
+
+======================================================================
+SANDBOXING
+
+Untrusted or high-risk processing MUST occur inside isolated
+execution environments.
+
+Isolation should restrict:
+
+• filesystem access
+• network access
+• process access
+• secrets
+• credentials
+• environment variables
+• system calls
+• resource consumption
+
+Use stronger isolation for higher-risk workloads.
+
+Do NOT create unnecessary operating-system kernels for every trivial
+function if a secure container/process sandbox provides equivalent
+isolation.
+
+Security isolation must be based on actual threat models and not
+marketing terminology.
+
+======================================================================
+SERVICE COMMUNICATION GATEWAY
+
+Where appropriate, service-to-service communication should pass
+through controlled security gateways or equivalent policy enforcement.
+
+The gateway MUST NOT become a universal bypass.
+
+Receiving services MUST independently validate authorization.
+
+Never rely solely on the network perimeter.
+
+======================================================================
+STAFF ACCESS
+
+The same zero-trust model applies to admin.koba.games.
+
+Staff accounts MUST NOT receive unrestricted internal access.
+
+Use:
+
+ROLE
+↓
+PERMISSIONS
+↓
+POLICY
+↓
+RESOURCE
+↓
+ACTION
+
+Never implement authorization as:
+
+role === "admin"
+
+======================================================================
+AUDITING
+
+All privileged actions and security-sensitive data access MUST be
+recorded in an immutable or tamper-evident audit system.
+
+Audit records should include:
+
+• actor
+• service
+• action
+• target
+• timestamp
+• authorization context
+• request ID
+• session
+• result
+• relevant before/after state
+• approval chain
+
+Audit logs MUST NOT be modifiable by ordinary staff.
+
+======================================================================
+CRITICAL ACTIONS
+
+Critical operations MUST support dual authorization.
+
+Examples:
+
+• destructive production operations
+• large financial actions
+• security configuration changes
+• SuperAdmin changes
+• production data deletion
+• infrastructure destruction
+• high-risk reward adjustments
+
+One person MUST NOT be able to bypass the required approval chain.
+
+======================================================================
+BREAK-GLASS ACCESS
+
+Emergency access MUST be temporary, explicitly authorized, narrowly
+scoped, fully audited, and automatically expired.
+
+Break-glass access MUST NOT become permanent administrator access.
+
+======================================================================
+SECURITY PRINCIPLE
+
+ASSUME BREACH.
+
+Design KOBA so that compromise of one function does NOT automatically
+compromise:
+
+• the entire platform
+• all player accounts
+• all servers
+• all RCON credentials
+• financial systems
+• reward systems
+• staff accounts
+• private communications
+• developer credentials
+• business accounts
+
+Compromise of one component should result in the smallest possible
+blast radius.
+
+======================================================================
+END KOBA TDL

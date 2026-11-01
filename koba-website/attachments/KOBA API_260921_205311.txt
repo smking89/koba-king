@@ -1,0 +1,772 @@
+For KOBA, I would not make the Developer Portal just a generic REST API. I’d build it as a Gaming Platform API, where developers can build bots, server tools, websites, apps, integrations, analytics products, and marketplace products on top of KOBA.
+The API surface should be organized around the things KOBA actually owns.
+👨‍💻 KOBA Developer Platform
+1. 🔐 Identity API
+The foundation.
+• KOBA OAuth 2.0
+• Sign in with KOBA
+• KOBA ID
+• User profile
+• Public profile
+• Connected games
+• Connected platforms
+• Connected servers
+• Clan memberships
+• Player permissions
+• Account verification
+• Developer authorization
+• Token management
+• Refresh tokens
+• Token revocation
+• Scopes
+Example:
+http
+GET /v1/users/{koba_id}
+GET /v1/users/{koba_id}/games
+GET /v1/users/{koba_id}/servers
+GET /v1/users/{koba_id}/clans
+
+This lets a developer build:
+"Sign in with KOBA"
+instead of creating another gaming account.
+
+───
+
+🎮 2. Game API
+This is one of KOBA's most important APIs.
+text
+Games
+  ↓
+Game Accounts
+  ↓
+Game Servers
+  ↓
+Game Events
+  ↓
+KOBA Events
+
+Endpoints:
+• Games
+• Game metadata
+• Game versions
+• Platforms
+• Game modes
+• Game accounts
+• Game identities
+• Game servers
+• Game statistics
+• Game achievements
+• Game rankings
+Example:
+http
+GET /v1/games
+GET /v1/games/{game_id}
+GET /v1/users/{id}/games
+GET /v1/users/{id}/games/{game_id}
+
+
+───
+
+🖥️ 3. Server API
+This should be a major API category because servers are one of KOBA's biggest assets.
+Developers should be able to:
+• Register servers
+• Retrieve servers
+• Update server information
+• Get live population
+• Get player lists
+• Get server statistics
+• Get server activity
+• Get historical population
+• Get server events
+• Get server rankings
+• Get server clans
+• Get server challenges
+• Get server competitions
+Example:
+http
+GET /v1/servers
+GET /v1/servers/{server_id}
+GET /v1/servers/{server_id}/players
+GET /v1/servers/{server_id}/stats
+GET /v1/servers/{server_id}/events
+GET /v1/servers/{server_id}/activity
+
+
+───
+
+⚡ 4. KOBA Events API
+This could become one of your most valuable developer APIs.
+Instead of every developer learning how every game generates events, KOBA normalizes them.
+For example:
+Rust might generate:
+text
+player_kill
+player_death
+item_crafted
+resource_gathered
+player_connected
+player_disconnected
+raid
+clan_event
+
+KOBA converts those into a standardized event format.
+json
+{
+  "event": "player.kill",
+  "game": "rust",
+  "server_id": "server_123",
+  "player_id": "koba_456",
+  "timestamp": "..."
+}
+
+Developers can subscribe to:
+• Player events
+• Server events
+• Clan events
+• Competition events
+• Challenge events
+• Achievement events
+• Marketplace events
+This is where your Normalized KOBA Event Model becomes extremely powerful.
+
+───
+
+🔔 5. Webhooks API
+Developers shouldn't have to constantly poll KOBA.
+Give them:
+Webhook subscriptions
+text
+player.created
+player.updated
+
+player.connected
+player.disconnected
+
+server.online
+server.offline
+
+server.player_joined
+server.player_left
+
+challenge.created
+challenge.started
+challenge.completed
+
+competition.started
+competition.completed
+
+clan.created
+clan.member_joined
+clan.member_left
+
+achievement.unlocked
+
+rank.changed
+
+reward.earned
+
+marketplace.order.created
+marketplace.order.completed
+
+Include:
+• Webhook creation
+• Event subscriptions
+• Signing secrets
+• Signature verification
+• Retry
+• Replay protection
+• Delivery logs
+• Failed deliveries
+• Test events
+
+───
+
+📊 6. Statistics API
+Allow approved applications to access standardized statistics.
+Player
+• Kills
+• Deaths
+• K/D
+• Wins
+• Losses
+• Playtime
+• Sessions
+• Accuracy
+• Score
+• Rank
+• Achievements
+• Challenges
+Server
+• Population
+• Peak population
+• Sessions
+• Retention
+• New players
+• Returning players
+• Activity
+• Player distribution
+Clan
+• Members
+• Activity
+• Wins
+• Losses
+• Score
+• Competition history
+You should have privacy-aware scopes so developers cannot simply access everything.
+
+───
+
+🏆 7. Competition API
+This lets developers build external competition systems.
+• Challenges
+• Competitions
+• Tournaments
+• Bounties
+• Leaderboards
+• Seasons
+• Objectives
+• Participants
+• Results
+• Rewards
+For example, someone could build:
+A third-party Rust tournament website powered by KOBA.
+They wouldn't need to build their own player identity, ranking, or competition infrastructure.
+
+───
+
+🥇 8. Leaderboards API
+Allow developers to create and consume leaderboards.
+http
+GET /v1/leaderboards
+GET /v1/leaderboards/{id}
+GET /v1/leaderboards/{id}/entries
+GET /v1/players/{id}/rank
+
+Support:
+• Global
+• Regional
+• Game
+• Server
+• Clan
+• Season
+• Custom metrics
+Eventually:
+Custom Developer Leaderboards
+A developer could create:
+"Top 100 Rust Raiders This Month"
+using KOBA data.
+
+───
+
+👥 9. Clan API
+Developers should be able to integrate clans into their applications.
+• Clan profiles
+• Members
+• Roles
+• Recruitment
+• Statistics
+• Rankings
+• Achievements
+• Challenges
+• Competitions
+• Rivalries
+• Events
+Example:
+http
+GET /v1/clans/{clan_id}
+GET /v1/clans/{clan_id}/members
+GET /v1/clans/{clan_id}/stats
+GET /v1/clans/{clan_id}/competitions
+
+
+───
+
+⚔️ 10. Rival API
+This is a particularly KOBA-specific API.
+• Rivals
+• Rival history
+• Rival statistics
+• Rival events
+• Rival rank
+• Rival comparisons
+Developers could build custom dashboards around:
+"How am I doing against my rival?"
+
+───
+
+🎯 11. LFG API
+This could become very useful for Discord bots and gaming websites.
+Developers can:
+• Create LFG posts
+• Search LFG
+• Filter LFG
+• Match players
+• Subscribe to LFG events
+• Retrieve LFG history
+Filters:
+text
+Game
+Platform
+Server
+Region
+Skill
+Team size
+Playstyle
+Time
+Language
+Tags
+
+Imagine a Discord bot using the KOBA API to automatically post:
+3 players looking for one more for Rust tonight.
+
+───
+
+📣 12. Social API
+Developers could integrate KOBA social functionality.
+• Profiles
+• Followers
+• Following
+• Connections
+• Posts
+• Comments
+• Reactions
+• Saves
+• Mentions
+• Notifications
+But this needs very granular scopes.
+A third-party app shouldn't automatically receive someone's entire social graph.
+
+───
+
+🛒 13. Marketplace API
+This is extremely important if KOBA becomes the gaming marketplace you're envisioning.
+Products
+• Products
+• Listings
+• Categories
+• Developers
+• Sellers
+• Prices
+• Inventory
+• Reviews
+Commerce
+• Orders
+• Order status
+• Payments
+• Refunds
+• Disputes
+• Seller earnings
+Example:
+http
+GET /v1/marketplace/products
+GET /v1/marketplace/products/{id}
+POST /v1/marketplace/listings
+GET /v1/marketplace/orders/{id}
+
+
+───
+
+💳 14. Payments / Commerce API
+Keep this separate from the basic marketplace API.
+• Checkout
+• Orders
+• Refunds
+• Seller balances
+• Platform fees
+• Payouts
+• Coupons
+• Transactions
+• Subscription billing
+This should be heavily permissioned.
+
+───
+
+🚀 15. Boost API
+This is where your unique KOBA economy becomes programmable.
+Developers could potentially:
+• Create eligible Boost campaigns
+• Retrieve Boost status
+• Activate Boosts
+• Track performance
+• Receive Boost events
+• Retrieve attribution
+Example:
+http
+POST /v1/boosts
+GET /v1/boosts/{id}
+GET /v1/boosts/{id}/analytics
+
+And webhooks:
+text
+boost.activated
+boost.ending
+boost.completed
+boost.performance_updated
+
+
+───
+
+📢 16. Advertising API
+For approved businesses and advertising platforms:
+• Campaigns
+• Audiences
+• Budgets
+• Targeting
+• Sponsored content
+• Impressions
+• Engagement
+• Conversions
+• Attribution
+• Analytics
+I'd keep this significantly more restricted than the normal API.
+
+───
+
+🪙 17. KOBA Economy API
+For approved applications:
+• Wallet
+• Balance
+• Transactions
+• Rewards
+• Coin transactions
+• Earnings
+• Credits
+• Debits
+But don't expose arbitrary money/coin movement to ordinary third-party apps.
+Use strict scopes such as:
+text
+wallet.read
+wallet.transactions.read
+wallet.rewards.read
+
+rather than:
+text
+wallet.write
+
+unless there is a very specific approved use case.
+
+───
+
+🎁 18. Rewards API
+This could be huge for competitions.
+Developers can create:
+• Reward campaigns
+• Reward pools
+• Digital rewards
+• Game keys
+• Coupons
+• Software licenses
+• KOBA rewards
+Then KOBA handles:
+Winner → Verification → Reward → Fulfillment
+
+───
+
+🤖 19. Aiden API
+Eventually I'd absolutely expose Aiden to developers.
+For example:
+http
+POST /v1/ai/generate
+
+Possible capabilities:
+• Generate LFG
+• Generate challenge
+• Generate competition
+• Generate announcement
+• Generate profile
+• Generate clan description
+• Generate achievement
+• Generate server description
+• Analyze statistics
+• Explain performance
+Developers pay through:
+API usage / KOBA Credits / developer billing
+That gives Aiden its own potential revenue stream.
+
+───
+
+🧩 20. Integration API
+This is for external services.
+• Discord
+• Websites
+• Bots
+• Server panels
+• Game servers
+• Community platforms
+• Streaming platforms
+• Developer applications
+The goal should be:
+If it's gaming-related, it should be possible to connect it to KOBA.
+
+───
+
+🔌 21. Game Adapter SDK
+This is different from the public API.
+Developers building KOBA game integrations need:
+text
+KOBA Adapter SDK
+        ↓
+Game Adapter
+        ↓
+Game Server / Game API / RCON
+        ↓
+KOBA Event Model
+
+Provide SDKs such as:
+• JavaScript / TypeScript
+• Python
+• C#
+• Go
+Potential adapter capabilities:
+• Authentication
+• Server connection
+• Event parsing
+• Player identity
+• Statistics
+• Server state
+• Event normalization
+• Webhooks
+• Health monitoring
+This could allow the KOBA ecosystem to expand to games you haven't personally integrated yet.
+
+───
+
+🔍 22. Search API
+I'd definitely include this.
+text
+Search KOBA
+├── Players
+├── Servers
+├── Clans
+├── Games
+├── Challenges
+├── Competitions
+├── LFG
+├── Products
+├── Developers
+└── Communities
+
+Developers could build custom KOBA-powered discovery experiences.
+
+───
+
+📈 23. Analytics API
+For server owners, developers and businesses.
+• Player analytics
+• Server analytics
+• Population
+• Retention
+• Engagement
+• Competition participation
+• Challenge participation
+• Marketplace performance
+• Boost performance
+• Campaign analytics
+
+───
+
+🔐 24. Developer Security API
+Your existing security architecture should become developer-facing tooling:
+• OAuth
+• API keys
+• Client secrets
+• API scopes
+• Token rotation
+• Token revocation
+• Webhook signing
+• IP restrictions
+• Rate limits
+• Audit logs
+• API logs
+• Usage monitoring
+• Sandbox
+• Test accounts
+• Test events
+
+───
+
+🧪 25. KOBA Sandbox
+This is extremely important.
+Every developer should get a sandbox environment where they can simulate:
+text
+Player joins server
+       ↓
+Kill occurs
+       ↓
+Statistics update
+       ↓
+Challenge progresses
+       ↓
+Achievement unlocks
+       ↓
+Leaderboard changes
+       ↓
+Webhook fires
+       ↓
+Reward issued
+
+They should be able to test all of this without touching production players or real money.
+
+───
+
+📚 26. Developer Portal
+And then wrap everything together with:
+Documentation
+• API Reference
+• Guides
+• Tutorials
+• SDK Documentation
+• Authentication
+• Webhooks
+• Event Catalog
+• Game Adapter Documentation
+Developer Tools
+• API Explorer
+• Webhook Tester
+• OAuth Tester
+• Sandbox
+• Logs
+• Usage
+• API Health
+• Rate Limits
+Developer Management
+• Applications
+• Organizations
+• Team Members
+• Roles
+• API Keys
+• OAuth Clients
+• Webhooks
+• Versions
+• Releases
+Marketplace
+• Publish App
+• Publish Plugin
+• Publish Bot
+• Publish Tool
+• Product Analytics
+• Customer Analytics
+• Revenue
+• Reviews
+
+───
+
+🔑 The really important part: scopes
+I would not give developers one giant koba.read permission.
+Build a granular permission system.
+For example:
+text
+profile.read
+profile.write
+
+games.read
+games.accounts.read
+
+servers.read
+servers.players.read
+servers.stats.read
+
+clans.read
+clans.members.read
+
+stats.read
+
+rankings.read
+
+challenges.read
+challenges.create
+
+competitions.read
+competitions.create
+
+lfg.read
+lfg.create
+
+social.read
+
+marketplace.read
+marketplace.products.write
+
+wallet.read
+
+rewards.read
+rewards.write
+
+webhooks.read
+webhooks.write
+
+And potentially elevated scopes:
+text
+server.manage
+competition.manage
+rewards.manage
+marketplace.manage
+ads.manage
+wallet.manage
+
+Those should require additional review.
+
+───
+
+🧠 And I'd make one architectural decision very early
+Build KOBA APIs around objects and events, not individual features.
+Your fundamental objects should be something like:
+text
+User
+Game
+Platform
+GameAccount
+Server
+Clan
+Community
+Player
+Event
+Challenge
+Competition
+Leaderboard
+Achievement
+LFG
+Post
+Product
+Listing
+Order
+Reward
+Boost
+Campaign
+Wallet
+Developer
+Application
+
+Then your event system connects them:
+text
+Player
+  ↓
+Game
+  ↓
+Server
+  ↓
+Game Event
+  ↓
+KOBA Event
+  ↓
+Statistics
+  ↓
+Achievement
+  ↓
+Ranking
+  ↓
+Challenge
+  ↓
+Competition
+  ↓
+Reward
+  ↓
+Social Activity
+  ↓
+Notification
+
+That is the API architecture I'd build KOBA around.
+Because then a developer isn't just accessing "KOBA's Rust API."
+They're accessing the KOBA Gaming Graph.
+And that is potentially much more powerful: a developer could build a Discord bot, server dashboard, tournament platform, clan website, player-stat application, marketplace tool, mobile app, or game integration using the same underlying KOBA identity, data, events, and social/competitive infrastructure.

@@ -1,0 +1,12 @@
+node_modules/
+website/node_modules/
+website/dist/
+.env
+.env.save
+.env.*.local
+database/*.sqlite
+database/*.sqlite-journal
+database/*.sqlite-wal
+database/*.sqlite-shm
+npm-debug.log*
+admin/*.orig_backup

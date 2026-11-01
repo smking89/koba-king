@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "KOBA",
+      "hasCanvas": false,
+      "bodyTextLen": 293,
+      "bodyTextHash": "7f6b6b1af6261128eedf139f109fed42267cebc2e7b246086f553ce70b343367",
+      "bodyTextPrefix": "Same way you sign in everywhere else. Email stays here. Steam, X",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/shell-desktop.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "KOBA",
+      "hasCanvas": false,
+      "bodyTextLen": 293,
+      "bodyTextHash": "7f6b6b1af6261128eedf139f109fed42267cebc2e7b246086f553ce70b343367",
+      "bodyTextPrefix": "Same way you sign in everywhere else. Email stays here. Steam, X",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/shell-desktop-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/shell-desktop.json"
+}

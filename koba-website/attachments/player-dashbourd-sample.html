@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOBA — Competitive Gaming Platform UI Preview</title>
+<style>
+:root{
+  --bg:#07080b;
+  --panel:#0d1015;
+  --panel2:#11151c;
+  --line:#202631;
+  --text:#f4f7fb;
+  --muted:#8d97a6;
+  --accent:#7cff4f;
+  --accent2:#43d9ff;
+  --danger:#ff4f67;
+  --gold:#ffc857;
+  --radius:14px;
+  --shadow:0 18px 50px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:radial-gradient(circle at 75% -10%,rgba(124,255,79,.08),transparent 28%),var(--bg);
+  color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+}
+button{font:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:230px 1fr}
+.sidebar{
+  position:sticky;top:0;height:100vh;border-right:1px solid var(--line);
+  padding:24px 16px;background:rgba(7,8,11,.92);backdrop-filter:blur(16px);
+}
+.logo{font-size:28px;font-weight:950;letter-spacing:.18em;margin:0 10px 34px}
+.logo span{color:var(--accent)}
+.nav{display:grid;gap:6px}
+.nav button{
+  border:0;background:transparent;color:#aeb7c4;text-align:left;padding:13px 14px;
+  border-radius:10px;cursor:pointer;display:flex;gap:12px;align-items:center;font-weight:700
+}
+.nav button:hover,.nav button.active{background:#151a21;color:white}
+.nav button.active{box-shadow:inset 3px 0 var(--accent)}
+.icon{width:20px;text-align:center}
+.side-bottom{position:absolute;left:16px;right:16px;bottom:18px}
+.profile-mini{border:1px solid var(--line);background:var(--panel);padding:12px;border-radius:12px;display:flex;gap:10px;align-items:center}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#222b36,#66717d);display:grid;place-items:center;font-weight:900}
+.main{min-width:0}
+.topbar{
+  height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+  padding:0 30px;position:sticky;top:0;background:rgba(7,8,11,.78);backdrop-filter:blur(18px);z-index:5
+}
+.search{background:#0e1218;border:1px solid var(--line);color:white;padding:10px 14px;border-radius:9px;width:min(390px,45vw);outline:none}
+.top-actions{display:flex;gap:9px;align-items:center}
+.circle-btn{width:38px;height:38px;border:1px solid var(--line);background:#0e1218;color:white;border-radius:9px;cursor:pointer}
+.content{max-width:1420px;margin:auto;padding:30px}
+.eyebrow{font-size:11px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;font-weight:800}
+h1{font-size:34px;margin:5px 0 4px;letter-spacing:-.04em}
+.sub{color:var(--muted);margin:0}
+.hero-grid{display:grid;grid-template-columns:1.45fr .75fr;gap:18px;margin-top:24px}
+.card{background:linear-gradient(180deg,#11151c,#0d1015);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.score-card{padding:25px;position:relative;overflow:hidden}
+.score-card:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;right:-90px;top:-120px;background:rgba(124,255,79,.09);filter:blur(3px)}
+.score-row{display:flex;align-items:end;justify-content:space-between;gap:20px}
+.score{font-size:78px;line-height:.9;font-weight:950;letter-spacing:-.07em;margin-top:8px}
+.score small{font-size:16px;color:var(--accent);letter-spacing:0}
+.rankline{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+.pill{padding:7px 10px;border-radius:999px;background:#171c23;border:1px solid #252d38;font-size:12px;font-weight:800}
+.pill.green{color:var(--accent);border-color:rgba(124,255,79,.25)}
+.spark{height:70px;margin-top:22px;display:flex;align-items:end;gap:5px}
+.spark i{display:block;width:10px;background:var(--accent);border-radius:3px 3px 0 0;opacity:.8}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+.stat{padding:14px;border:1px solid var(--line);background:#0a0d11;border-radius:10px}
+.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.rival-card{padding:22px}
+.rival-head{display:flex;justify-content:space-between;align-items:center}
+.rival-score{font-size:40px;font-weight:950;margin:14px 0}
+.vs{display:grid;grid-template-columns:1fr 45px 1fr;align-items:center;gap:10px;text-align:center;margin:18px 0}
+.vsline{height:1px;background:var(--line)}
+.rival-name{font-weight:900}.rival-muted{font-size:11px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:#171c23;color:white;padding:10px 13px;border-radius:9px;font-weight:800;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#071006}
+.btn:hover{transform:translateY(-1px)}
+.section{margin-top:28px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-head h2{font-size:17px;margin:0;letter-spacing:-.02em}
+.link{color:var(--accent);font-size:12px;font-weight:800}
+.events{display:grid;gap:9px}
+.event{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:14px 16px}
+.event .avatar{width:40px;height:40px}
+.event-main{font-size:14px}.event-main strong{font-weight:950}.event-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.event-score{font-weight:950;color:var(--accent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.challenge{padding:18px}
+.challenge-top{display:flex;justify-content:space-between;gap:10px}
+.challenge h3{margin:8px 0 5px;font-size:16px}
+.progress{height:7px;background:#20252c;border-radius:10px;overflow:hidden;margin:14px 0 9px}
+.progress i{display:block;height:100%;width:72%;background:var(--accent)}
+.challenge-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.leaderboard{overflow:hidden}
+.lb-row{display:grid;grid-template-columns:45px 1fr 100px 80px;gap:10px;padding:13px 16px;border-top:1px solid var(--line);align-items:center}
+.lb-row:first-child{border-top:0}.lb-row.you{background:rgba(124,255,79,.06)}
+.pos{font-weight:950;color:#77808d}.player{display:flex;gap:10px;align-items:center}.player .avatar{width:31px;height:31px}
+.score-num{text-align:right;font-weight:900}.delta{text-align:right;font-size:11px;color:var(--accent)}
+.badge{font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:5px 7px;border-radius:5px;background:#1a2028;color:#9fa8b5}
+.mobile-nav{display:none}
+@media(max-width:900px){
+  .app{display:block}.sidebar{display:none}.hero-grid,.two{grid-template-columns:1fr}.content{padding:20px 15px}.topbar{padding:0 15px}.search{width:190px}
+  .mobile-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);bottom:0;left:0;right:0;height:68px;background:rgba(7,8,11,.96);border-top:1px solid var(--line);z-index:20}
+  .mobile-nav button{background:transparent;border:0;color:#8993a1;font-size:10px;font-weight:800}.mobile-nav button.active{color:var(--accent)}
+  .stats{grid-template-columns:repeat(2,1fr)}.score{font-size:61px}.lb-row{grid-template-columns:35px 1fr 75px}.delta{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">K<span>O</span>BA</div>
+    <nav class="nav">
+      <button class="active"><span class="icon">⌂</span>Home</button>
+      <button><span class="icon">◈</span>Discover</button>
+      <button><span class="icon">⚔</span>Rivals</button>
+      <button><span class="icon">◇</span>Challenges</button>
+      <button><span class="icon">♜</span>Clans</button>
+    </nav>
+    <div class="side-bottom">
+      <div class="profile-mini">
+        <div class="avatar">SK</div>
+        <div><b>Shawn</b><div class="rival-muted">KOBA #127</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <input class="search" placeholder="Search players, clans, servers..." />
+      <div class="top-actions">
+        <button class="circle-btn">⌁</button>
+        <button class="circle-btn">●</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="eyebrow">Competitive Dashboard</div>
+      <h1>Good evening, Shawn.</h1>
+      <p class="sub">Your competition is moving. Stay ahead.</p>
+
+      <div class="hero-grid">
+        <section class="card score-card">
+          <div class="score-row">
+            <div>
+              <div class="eyebrow">KOBA Score</div>
+              <div class="score">8,742 <small>+184</small></div>
+              <div class="rankline">
+                <span class="pill green">▲ 3 places today</span>
+                <span class="pill">GLOBAL #127</span>
+                <span class="pill">NA-WEST #8</span>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="eyebrow">Current Form</div>
+              <div style="font-size:30px;font-weight:950;color:var(--accent);margin-top:6px">HOT</div>
+              <div class="rival-muted">7 day performance</div>
+            </div>
+          </div>
+          <div class="spark" aria-label="score trend">
+            <i style="height:24%"></i><i style="height:35%"></i><i style="height:30%"></i><i style="height:47%"></i>
+            <i style="height:44%"></i><i style="height:61%"></i><i style="height:55%"></i><i style="height:72%"></i>
+            <i style="height:67%"></i><i style="height:83%"></i><i style="height:77%"></i><i style="height:100%"></i>
+          </div>
+          <div class="stats">
+            <div class="stat"><b>412</b><span>Kills</span></div>
+            <div class="stat"><b>1.84</b><span>K/D</span></div>
+            <div class="stat"><b>68%</b><span>Win Rate</span></div>
+            <div class="stat"><b>31</b><span>Achievements</span></div>
+          </div>
+        </section>
+
+        <section class="card rival-card">
+          <div class="rival-head">
+            <div><div class="eyebrow">Your #1 Rival</div><div style="font-size:21px;font-weight:950;margin-top:5px">MIKE</div></div>
+            <span class="badge">RIVAL</span>
+          </div>
+          <div class="rival-score">8,783</div>
+          <div class="rival-muted">41 KOBA ahead of you</div>
+          <div class="vs">
+            <div><div class="rival-name">SHAWN</div><div class="rival-muted">#127</div></div>
+            <div class="vsline"></div>
+            <div><div class="rival-name">MIKE</div><div class="rival-muted">#126</div></div>
+          </div>
+          <button class="btn primary" style="width:100%">VIEW RIVAL</button>
+        </section>
+      </div>
+
+      <section class="section">
+        <div class="section-head"><h2>Live Competition</h2><span class="link">VIEW ALL</span></div>
+        <div class="events">
+          <div class="card event"><div class="avatar">MK</div><div class="event-main"><strong>MIKE</strong> passed you in the global rankings.<div class="event-meta">Global #126 → You #127 · 42 sec ago</div></div><div class="event-score">+31</div></div>
+          <div class="card event"><div class="avatar">JR</div><div class="event-main"><strong>JORDAN</strong> unlocked <b>HEADHUNTER</b>.<div class="event-meta">Rust PC · 2 min ago</div></div><div class="event-score">+75</div></div>
+          <div class="card event"><div class="avatar">SK</div><div class="event-main"><strong>YOU</strong> eliminated Mike with an AK47.<div class="event-meta">Rust PC · Koba Official #04 · 5 min ago</div></div><div class="event-score">+37 KOBA</div></div>
+        </div>
+      </section>
+
+      <div class="two section">
+        <section>
+          <div class="section-head"><h2>Active Challenges</h2><span class="link">EXPLORE</span></div>
+          <div class="card challenge">
+            <div class="challenge-top"><span class="badge">RUST PC</span><span class="eyebrow">2H 14M LEFT</span></div>
+            <h3>HUNT THE HUNTER</h3>
+            <div class="rival-muted">Get 25 player kills on Koba Official servers.</div>
+            <div class="progress"><i></i></div>
+            <div class="challenge-foot"><span>18 / 25 kills</span><b style="color:var(--gold)">1,000 KOBA</b></div>
+          </div>
+          <div class="card challenge" style="margin-top:9px">
+            <div class="challenge-top"><span class="badge">SPONSORED</span><span class="eyebrow">1D 08H LEFT</span></div>
+            <h3>LONG SHOT</h3>
+            <div class="rival-muted">Land your longest kill this week.</div>
+            <div class="progress"><i style="width:46%"></i></div>
+            <div class="challenge-foot"><span>142m current best</span><b style="color:var(--gold)">PRIZE</b></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-head"><h2>Global Leaderboard</h2><span class="link">FULL RANKINGS</span></div>
+          <div class="card leaderboard">
+            <div class="lb-row"><div class="pos">124</div><div class="player"><div class="avatar">AX</div><b>AXEL</b></div><div class="score-num">8,801</div><div class="delta">+18</div></div>
+            <div class="lb-row"><div class="pos">125</div><div class="player"><div class="avatar">RX</div><b>RAVEN</b></div><div class="score-num">8,795</div><div class="delta">+7</div></div>
+            <div class="lb-row"><div class="pos">126</div><div class="player"><div class="avatar">MK</div><b>MIKE</b></div><div class="score-num">8,783</div><div class="delta">+31</div></div>
+            <div class="lb-row you"><div class="pos">127</div><div class="player"><div class="avatar">SK</div><b>SHAWN <span class="badge">YOU</span></b></div><div class="score-num">8,742</div><div class="delta">+184</div></div>
+            <div class="lb-row"><div class="pos">128</div><div class="player"><div class="avatar">DZ</div><b>DOZER</b></div><div class="score-num">8,721</div><div class="delta">−12</div></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<nav class="mobile-nav">
+  <button class="active">⌂<br>HOME</button>
+  <button>◈<br>DISCOVER</button>
+  <button>⚔<br>COMPETE</button>
+  <button>♜<br>CLANS</button>
+  <button>●<br>PROFILE</button>
+</nav>
+</body>
+</html>
+

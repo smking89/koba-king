@@ -1,0 +1,6 @@
+/* Tailwind's three layers. Must be imported before tokens.css/components.css
+   so the bb-* component classes (equal specificity, later in source order)
+   win over Tailwind's preflight/reset and any of its own utility defaults. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

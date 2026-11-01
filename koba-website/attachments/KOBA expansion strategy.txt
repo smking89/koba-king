@@ -1,0 +1,282 @@
+This is a much stronger expansion strategy for KOBA. I would incorporate it directly into the product architecture and the About/vision narrative, but with one important principle:
+KOBA should expand by integration friction and competitive player density—not simply by game popularity.
+That gives Claude a very clear rule for deciding what gets integrated next.
+I would formalize it like this:
+KOBA GAME EXPANSION STRATEGY
+START WHERE THE DATA IS OPEN. SCALE WHERE THE COMPETITION IS DENSE.
+KOBA will not attempt to integrate every major game at once.
+Instead, game expansion follows a deliberate framework:
+Integration Friction × Player Density × Competitive Value
+A game is attractive when it has:
+• Accessible gameplay telemetry
+• Dedicated/community servers
+• Reliable event sources
+• Persistent player identities
+• Strong player retention
+• Meaningful competition
+• Rivalry potential
+• Clan/team structures
+• Sufficient player density
+The objective isn't simply to add games.
+The objective is to add games that strengthen the KOBA network.
+
+───
+
+PHASE 1 — THE SURVIVAL SANDBOX
+Rust → DayZ → ARK → 7 Days to Die → Conan Exiles
+These games provide the ideal environment for proving KOBA's fundamental thesis.
+They share several characteristics:
+• Dedicated servers
+• Community-hosted ecosystems
+• Persistent worlds
+• Server identities
+• PvP
+• Clans/tribes/factions
+• Wipe cycles
+• Long player sessions
+• Strong rivalries
+• Accessible server telemetry
+This allows KOBA to develop its core event infrastructure without immediately depending on publisher-controlled APIs.
+Primary objective:
+Validate KOBA.
+Specifically:
+• KOBA Score
+• Player identity
+• Event normalization
+• Rankings
+• Rivalry systems
+• Clan competition
+• Server competition
+• Challenges
+• Achievements
+• Regional rankings
+• Competitive feed
+
+───
+
+PHASE 2 — COMPETITIVE SERVER & SHOOTER ECOSYSTEMS
+CS2 → Squad → Hell Let Loose → TF2 → Palworld
+Once KOBA has proven its event architecture, expand into games with greater player density and more frequent competitive events.
+These games introduce more sophisticated telemetry:
+• Match events
+• Round events
+• Headshots
+• Damage
+• Objectives
+• Clutches
+• Team performance
+• ELO/rank changes
+• Match outcomes
+• Role-specific performance
+This phase is important because KOBA begins transitioning from:
+SERVER COMPETITION
+to
+MATCH COMPETITION
+The architecture must support both.
+
+───
+
+PHASE 3 — PUBLISHER ECOSYSTEMS
+League of Legends → VALORANT → Apex Legends → Rainbow Six Siege → additional publisher titles
+This is where the integration model changes.
+Instead of primarily connecting directly to community servers, KOBA begins working with:
+• Official publisher APIs
+• Developer platforms
+• Approved data providers
+• Partner integrations
+• Third-party telemetry providers where permitted
+The integration friction becomes substantially higher.
+But so does the potential player density.
+Primary objective:
+Turn KOBA into a universal competitive gaming identity.
+
+───
+
+THE KOBA GAME ADAPTER
+Every game must plug into the same fundamental architecture.
+text
+┌─────────────────────────────┐
+│      GAME TELEMETRY         │
+│                             │
+│ RCON                        │
+│ Webhooks                    │
+│ Game Logs                   │
+│ GSI                         │
+│ Server APIs                 │
+│ Publisher APIs              │
+│ Approved Data Providers     │
+└──────────────┬──────────────┘
+               ↓
+┌─────────────────────────────┐
+│    GAME-SPECIFIC ADAPTER    │
+│                             │
+│ Parse                       │
+│ Validate                    │
+│ Identify                    │
+│ Normalize                   │
+└──────────────┬──────────────┘
+               ↓
+┌─────────────────────────────┐
+│   NORMALIZED KOBA EVENTS    │
+│                             │
+│ PlayerEvent                 │
+│ MatchEvent                  │
+│ CombatEvent                 │
+│ ObjectiveEvent              │
+│ TerritoryEvent              │
+│ ClanEvent                   │
+│ AchievementEvent            │
+└──────────────┬──────────────┘
+               ↓
+┌─────────────────────────────┐
+│       KOBA EVENT ENGINE     │
+└──────────────┬──────────────┘
+               ↓
+       ┌───────┼────────┐
+       ↓       ↓        ↓
+    SCORE   RANKINGS  FEED
+       ↓       ↓        ↓
+    RIVALS  CHALLENGES CLANS
+
+The most important architectural rule is:
+Game-specific complexity stays inside the adapter.
+KOBA's core systems should not need to understand the internal mechanics of every game.
+
+───
+
+NORMALIZED EVENTS
+For example, Rust might produce:
+json
+{
+  "game": "rust",
+  "event": "player_killed",
+  "killer": "steam_765611...",
+  "victim": "steam_765612...",
+  "weapon": "ak47",
+  "distance": 142
+}
+
+The Rust adapter transforms it into a KOBA event:
+json
+{
+  "type": "PLAYER_KILLED",
+  "game": "rust",
+  "platform": "pc",
+  "player_id": "koba_player_123",
+  "target_id": "koba_player_456",
+  "metadata": {
+    "weapon": "ak47",
+    "distance": 142
+  },
+  "timestamp": 1789000000
+}
+
+A future DayZ adapter could produce the same fundamental event type.
+The KOBA scoring engine doesn't care whether the event came from Rust or DayZ.
+That's the abstraction that allows KOBA to scale.
+
+───
+
+THE THREE-LAYER GAME MODEL
+I'd actually make Claude build the game architecture around three explicit layers.
+Layer 1 — GAME ADAPTER
+Understands the game.
+text
+Rust
+DayZ
+ARK
+CS2
+VALORANT
+etc.
+
+Layer 2 — KOBA EVENT MODEL
+Understands competition.
+text
+PLAYER_KILLED
+MATCH_WON
+OBJECTIVE_COMPLETED
+ACHIEVEMENT_UNLOCKED
+CLAN_WIN
+TERRITORY_CAPTURED
+RANK_CHANGED
+
+Layer 3 — KOBA COMPETITIVE ENGINE
+Understands the player.
+text
+KOBA SCORE
+RANKING
+RIVAL
+CHALLENGE
+ACHIEVEMENT
+CLAN
+SEASON
+COMPETITION
+
+That separation is critical.
+
+───
+
+THE EXPANSION FLYWHEEL
+The long-term KOBA flywheel becomes:
+text
+MORE GAMES
+              ↓
+        MORE PLAYERS
+              ↓
+       MORE GAME DATA
+              ↓
+      MORE COMPETITION
+              ↓
+       MORE RANKINGS
+              ↓
+        MORE RIVALS
+              ↓
+       MORE CHALLENGES
+              ↓
+        MORE CLANS
+              ↓
+      MORE SOCIAL ACTIVITY
+              ↓
+       MORE PLAYER VALUE
+              ↓
+          MORE GAMES
+
+This is where the platform thesis becomes powerful.
+A user doesn't necessarily join KOBA because they love KOBA.
+They join because:
+their server is there.
+Then their friends arrive.
+Then their rivals.
+Then their clan.
+Then they discover another game.
+And eventually KOBA becomes the place where their gaming identity lives.
+
+───
+
+ONE IMPORTANT CHANGE TO THE KOBA THESIS
+I would slightly modify the phrase:
+“Strava for Gaming.”
+It's a useful internal analogy, but I wouldn't make it KOBA's public identity.
+Instead:
+KOBA — The Competitive Layer for Gaming
+Then internally:
+Think of KOBA as the competitive identity and competition layer that can sit across multiple games.
+That's much bigger than a direct Strava comparison.
+
+───
+
+THE ULTIMATE KOBA VISION
+The end state isn't:
+“KOBA supports 20 games.”
+That's a feature list.
+The real end state is:
+A player can move between games without leaving their competitive identity behind.
+Rust today.
+DayZ tomorrow.
+ARK next week.
+CS2 next month.
+Another game six months later.
+The games change.
+The player continues.
+KOBA becomes the persistent layer connecting them all.
+And that's the architectural principle I'd make absolutely explicit in the KOBA Master Specification that Claude will use throughout development.

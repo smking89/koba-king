@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+  --topbar-h: 72px;
+  --bottomnav-h: 72px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  scrollbar-width: none;
+}
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+body {
+  background-color: #05080e;
+  background-image: radial-gradient(1200px 700px at 12% -10%, rgba(0, 255, 127, 0.12), transparent 60%),
+    radial-gradient(1100px 650px at 100% 0%, rgba(0, 229, 255, 0.1), transparent 60%),
+    radial-gradient(1000px 800px at 50% 100%, rgba(217, 70, 239, 0.08), transparent 60%);
+  background-attachment: fixed;
+  color: #f2f6f5;
+  font-family: var(--font-body);
+  line-height: 1.55;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: #00ff7f;
+  color: #05080e;
+}
+
+/* Glassmorphic card base - reused by every panel/card in the product
+   instead of each component re-declaring blur/border/background. Plain
+   rounded corners, matching the reference mockups - NOT the angular
+   cut-corner "war terminal" panels the first pass used instead. */
+.glass {
+  background: rgba(13, 20, 32, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 255, 127, 0.16);
+  border-radius: 20px;
+}
+
+/* Reserved for the one place the reference actually uses a cut corner
+   (the terminal window chrome) - not the default shape anymore. */
+.chamfer {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+.chamfer-sm {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.font-marker {
+  font-family: var(--font-marker);
+}
+
+/* Scanline sweep overlay for the live terminal widget. */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  mix-blend-mode: overlay;
+}
+
+.text-glow-lime {
+  text-shadow: 0 0 18px rgba(0, 255, 127, 0.55);
+}
+/* The brand mark itself is a lime->cyan gradient (not flat lime) - the
+   wordmark accent and the hero/CTA "shout" text need to match it, not
+   substitute a flat color that reads noticeably less vibrant. */
+.text-gradient-brand {
+  background-image: linear-gradient(90deg, #00ff7f, #00e5ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgba(0, 255, 127, 0.35));
+}
+.text-glow-magenta {
+  text-shadow: 0 0 18px rgba(217, 70, 239, 0.55);
+}
+
+/* Ambient pulsing border glow - the reference uses this on the terminal
+   window, the WebRCON buttons, and the live status chips, not just the
+   pricing cards' animated trace. */
+@keyframes glow-pulse-lime {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(0, 255, 127, 0.25), inset 0 0 0 1px rgba(0, 255, 127, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 26px rgba(0, 255, 127, 0.55), inset 0 0 0 1px rgba(0, 255, 127, 0.5);
+  }
+}
+.glow-border-lime {
+  animation: glow-pulse-lime 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

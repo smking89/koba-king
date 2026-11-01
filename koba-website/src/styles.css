@@ -1,0 +1,1401 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #000000;
+  --color-bg-elevated: #0a0a0a;
+  --color-bg-subtle: #151515;
+  --color-fg: #fafafa;
+  --color-muted: #a3a3a3;
+  --color-faint: #6f6f6f;
+  --color-border: #2a2a2a;
+  --color-accent: #ffffff;
+  --color-ok: #d4d4d4;
+  --color-lime: #e5e5e5;
+  --color-cyan: #fafafa;
+  --color-violet: #d4d4d4;
+  --color-magenta: #bdbdbd;
+  --color-warn: #d4d4d4;
+  --color-gold: #f5f5f5;
+  --color-danger: #e5e5e5;
+  --color-scrim: #000000;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* Light mode. Every surface in the app reads these tokens, so the switch is a
+   token swap rather than a second stylesheet - no component needs to know
+   which theme is live. Kept deliberately monochrome to match the dark theme.
+   The canvas is pure white (not a grey wash); depth comes from the hairline
+   border plus the light-grey --color-bg-subtle used for chips and hover. */
+html[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-bg-subtle: #f4f4f5;
+  --color-fg: #0a0a0a;
+  --color-muted: #52525b;
+  --color-faint: #71717a;
+  --color-border: #e4e4e7;
+  --color-accent: #0a0a0a;
+  --color-ok: #3f3f46;
+  --color-lime: #18181b;
+  --color-cyan: #0a0a0a;
+  --color-violet: #3f3f46;
+  --color-magenta: #52525b;
+  --color-warn: #52525b;
+  --color-gold: #18181b;
+  --color-danger: #27272a;
+  --color-scrim: #000000;
+  color-scheme: light;
+}
+
+/* Brand gradient (token pass 1 of 2) - a monochrome white-to-grey gradient on
+   primary surfaces (CTAs, active nav state, featured cards) against the black
+   canvas. No colour, no glow.
+
+   Literal hex values, not --theme custom properties: a --color-brand-from
+   @theme entry compiled into the stylesheet correctly (confirmed by
+   fetching and inspecting the raw served CSS) but never actually resolved
+   via getComputedStyle at runtime - Tailwind v4's content-based tree-
+   shaking only guarantees a @theme custom property survives to a live
+   :root value when a generated utility using it (bg-brand-from, etc.) is
+   also found literally in scanned source; referencing it only through
+   var() inside a custom @utility block didn't count. Literal values side-
+   step that entirely and are equally easy to keep in sync across the two
+   utilities below. */
+@utility brand-gradient {
+  background-image: linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #8a8a8a 100%);
+}
+
+@utility brand-gradient-text {
+  background-image: linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #8a8a8a 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* A white gradient CTA disappears on a white canvas, so light mode flips the
+   same gradient to ink and keeps the label white. */
+html[data-theme="light"] .brand-gradient {
+  background-image: linear-gradient(135deg, #18181b 0%, #3f3f46 50%, #52525b 100%);
+  color: #ffffff;
+}
+
+html[data-theme="light"] .brand-gradient-text {
+  background-image: linear-gradient(135deg, #18181b 0%, #3f3f46 50%, #52525b 100%);
+}
+
+html[data-theme="light"] .fire-btn {
+  background: linear-gradient(180deg, #27272a, #09090b);
+  color: #ffffff;
+}
+
+html[data-theme="light"] .fire-btn:hover {
+  background: linear-gradient(180deg, #3f3f46, #18181b);
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  html {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    color-scheme: dark;
+  }
+
+  html[data-theme="light"] {
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+    text-rendering: optimizeLegibility;
+  }
+
+  * {
+    scrollbar-width: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  input[type="range"] {
+    accent-color: #ffffff;
+    background: transparent;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ok);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes koba-sweep {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(110%);
+  }
+}
+
+.pulse-frame {
+  position: relative;
+  overflow: hidden;
+}
+
+.pulse-frame.is-live::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, var(--color-lime), var(--color-ok), transparent);
+  animation: koba-sweep 680ms cubic-bezier(0.22, 1, 0.36, 1) 1;
+  pointer-events: none;
+}
+
+.dash-card {
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+}
+
+.admin-app {
+  display: grid;
+  min-height: 70dvh;
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  background: #000000;
+}
+
+@media (min-width: 800px) {
+  .admin-app {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}
+
+.admin-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid #2a2a2a;
+  background: #050505;
+  padding: 12px;
+}
+
+@media (min-width: 800px) {
+  .admin-nav {
+    flex-direction: column;
+    border-right: 1px solid #2a2a2a;
+    border-bottom: 0;
+    padding: 18px 12px;
+  }
+}
+
+.admin-brand {
+  margin: 4px 8px 2px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.admin-kicker {
+  margin: 0 8px 10px;
+  color: #8a8a8a;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.admin-link,
+.tab-plain {
+  height: 40px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0 12px;
+  color: #8d8d8d;
+  font-size: 14px;
+  text-align: left;
+  box-shadow: inset 0 -2px 0 transparent;
+}
+
+.admin-link.is-on,
+.tab-plain.is-on,
+.tab-plain[aria-pressed="true"],
+.tab-plain[aria-selected="true"] {
+  background: #ffffff;
+  color: #000000;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.admin-main {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 16px;
+}
+
+.admin-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  background: #0a0a0a;
+  padding: 16px;
+}
+
+.admin-stat-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-stat-label {
+  color: #9a9a9a;
+  font-size: 13px;
+}
+
+.admin-stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.nav-on {
+  background: transparent;
+  color: var(--color-fg);
+}
+
+.menu-pop {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.45);
+  animation: menu-in 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The game list is long enough to scroll. The app hides scrollbars globally,
+   so this one keeps a thin track as the cue that more titles are below. */
+.game-picker-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+.game-picker-list::-webkit-scrollbar {
+  display: block;
+  width: 6px;
+}
+.game-picker-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.game-picker-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--color-border);
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dock {
+  border-bottom: 0;
+}
+
+.card-lift {
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+}
+
+.tab-mark {
+  position: absolute;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-violet);
+  pointer-events: none;
+  transition:
+    left 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease;
+}
+
+.nav-morph {
+  display: grid;
+  place-items: center;
+}
+
+.nav-morph .nav-glyph {
+  grid-area: 1 / 1;
+  transition:
+    opacity 300ms cubic-bezier(0.2, 0, 0, 1),
+    filter 300ms cubic-bezier(0.2, 0, 0, 1),
+    scale 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.nav-glyph-fill,
+.nav-glyph.is-on:not(.nav-glyph-fill) {
+  opacity: 0;
+  scale: 0.25;
+  filter: blur(4px);
+}
+
+.nav-glyph-fill.is-on {
+  opacity: 1;
+  scale: 1;
+  filter: none;
+}
+
+.badge-pin {
+  transition: rotate 180ms cubic-bezier(0.22, 1, 0.36, 1), scale 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .badge-pin:hover {
+    rotate: -8deg;
+    scale: 1.12;
+  }
+}
+
+.badge-pin.is-held {
+  animation: badge-wiggle 420ms ease-in-out;
+}
+
+.medal-ring {
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  background: transparent;
+}
+
+.medal-art {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: transparent;
+  filter: grayscale(1);
+}
+
+.medal-caption {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.medal-on .medal-ring {
+  border-color: var(--color-fg);
+}
+
+.medal-on .medal-caption {
+  color: var(--color-fg);
+}
+
+.badge-enter {
+  animation: badge-pop 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.badge-tip {
+  position: absolute;
+  z-index: 30;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  width: max-content;
+  max-width: 14rem;
+  translate: -50% 0;
+  border-radius: 0.75rem;
+  background: var(--color-bg);
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.session-pop {
+  animation: session-pop 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.float-gain {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  pointer-events: none;
+  animation: float-gain 800ms ease-out forwards;
+}
+
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fold.is-open {
+  grid-template-rows: 1fr;
+}
+
+.fold > div {
+  overflow: hidden;
+}
+
+.shop-cta {
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in oklab, white 48%, transparent);
+  translate: -50% -50%;
+  animation: ripple-out 480ms ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes badge-pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes badge-wiggle {
+  0% {
+    rotate: 0deg;
+  }
+  35% {
+    rotate: -10deg;
+    scale: 1.08;
+  }
+  70% {
+    rotate: 8deg;
+    scale: 1.08;
+  }
+  100% {
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+
+/* Role tier animations (src/components/network/badges.tsx) - monochrome only.
+   The subtle opacity pulse is the one motion kept; the former glow, shimmer
+   halo, and radial aura effects are removed. */
+.role-anim-pulse {
+  animation: role-pulse 2.4s ease-in-out infinite;
+}
+
+.role-anim-glow,
+.role-anim-shimmer,
+.role-anim-radiant {
+  position: relative;
+  animation: none;
+}
+
+@keyframes role-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+  50% {
+    opacity: 0.6;
+    scale: 0.92;
+  }
+}
+
+@keyframes role-shimmer-sweep {
+  0% {
+    background-position: 200% 0%;
+  }
+  100% {
+    background-position: -200% 0%;
+  }
+}
+
+/* Plain colored role-name text (no pill, no box) for gold/violet/magenta tiers - a shimmering gradient sweep through the letters instead of a flat color. --role-color is set inline per role. */
+.role-text-shimmer {
+  background-image: linear-gradient(110deg, var(--role-color) 35%, #ffffff 50%, var(--role-color) 65%);
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: role-shimmer-sweep 2.6s linear infinite;
+}
+
+@keyframes session-pop {
+  0%,
+  100% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.08;
+  }
+}
+
+@keyframes float-gain {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
+
+@keyframes ripple-out {
+  to {
+    scale: 28;
+    opacity: 0;
+  }
+}
+
+/* Unfilled ring (not a filled badge) - a conic gradient masked down to just
+   the stroke, so the center stays transparent and only the gold/silver/
+   bronze frame shimmers around the plain bold rank number. */
+.medal-ring {
+  position: relative;
+}
+
+.medal-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  padding: 2px;
+  background: conic-gradient(from 0deg, transparent 0%, var(--medal-color, #fff) 20%, transparent 40%, var(--medal-color, #fff) 70%, transparent 90%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: medal-ring-spin 2.8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes medal-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Thick "trading card" border frame for podium/elite cards. A traveling
+   conic-gradient ring (like .medal-ring) distorts badly on a tall
+   non-square card, so elite cards get the "breathing weight" treatment
+   instead - the border itself pulses 2px -> 3px -> 2px, no mask tricks. */
+.podium-frame {
+  box-sizing: border-box;
+  position: relative;
+  border: 2px solid var(--color-border);
+  border-radius: 1.5rem;
+}
+
+.podium-frame.is-elite {
+  border-color: color-mix(in oklab, var(--podium-color, #fff) 55%, var(--color-border));
+  animation: podium-breathe 3.6s ease-in-out infinite;
+}
+
+@keyframes podium-breathe {
+  0%,
+  100% {
+    border-width: 2px;
+  }
+  50% {
+    border-width: 3px;
+  }
+}
+
+/* Logo mark on the public leaderboard hero - angled only; no outline glow. */
+.brand-mark-slant {
+  transform: rotate(-6deg);
+}
+
+/* Micro-tooltip for truncated player names - fades in on hover/focus,
+   dark elevated-surface palette to match the rest of the UI. */
+.name-tip {
+  position: relative;
+}
+
+.name-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%) translateY(2px);
+  white-space: nowrap;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-fg);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.55rem;
+  border-radius: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 20;
+}
+
+.name-tip:hover::after,
+.name-tip:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name-tip::after {
+    transition: none;
+  }
+}
+
+.counter-roll-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.counter-impact {
+  animation: counter-shake 220ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes counter-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-2px, 1px);
+  }
+  40% {
+    transform: translate(2px, -1px);
+  }
+  60% {
+    transform: translate(-1px, 1px);
+  }
+  80% {
+    transform: translate(1px, 0);
+  }
+}
+
+.counter-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.counter-burst i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #8a8a8a 100%);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  opacity: 0;
+  animation: counter-particle 360ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation-delay: calc(var(--i) * 12ms);
+}
+
+@keyframes counter-particle {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg)) translateY(-18px) scale(0.4);
+  }
+}
+
+.score-roll-up {
+  animation: score-roll-up 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.score-roll-down {
+  animation: score-roll-down 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes score-roll-up {
+  0% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes score-roll-down {
+  0% {
+    transform: translateY(-12px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.form-bar {
+  animation: form-bar-wave 1.8s ease-in-out infinite;
+  animation-delay: var(--bar-delay, 0ms);
+  transform-origin: bottom;
+}
+
+@keyframes form-bar-wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.82);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-lift:hover {
+    transform: none;
+  }
+
+  .shop-cta,
+  .shop-cta::after,
+  .badge-enter,
+  .badge-pin.is-held,
+  .session-pop,
+  .float-gain,
+  .lot-card.is-shimmer::before,
+  .role-anim-pulse,
+  .role-anim-glow,
+  .role-anim-shimmer,
+  .role-anim-shimmer::after,
+  .role-anim-radiant,
+  .role-anim-radiant::before,
+  .counter-impact,
+  .counter-burst i,
+  .score-roll-up,
+  .score-roll-down,
+  .form-bar,
+  .medal-ring::before,
+  .podium-frame.is-elite {
+    animation: none;
+  }
+
+  .role-text-shimmer {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: var(--role-color);
+    color: var(--role-color);
+  }
+
+  .ticker-track {
+    animation: none;
+  }
+}
+
+.ticker {
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-run 36s linear infinite;
+}
+
+.ticker:hover .ticker-track,
+.ticker:focus-within .ticker-track {
+  animation-play-state: paused;
+}
+
+.lot-card {
+  --lot-glow: var(--color-muted);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 180ms ease;
+}
+
+.lot-card[data-rarity="uncommon"] {
+  --lot-glow: var(--color-ok);
+}
+.lot-card[data-rarity="rare"] {
+  --lot-glow: var(--color-cyan);
+}
+.lot-card[data-rarity="epic"] {
+  --lot-glow: var(--color-violet);
+}
+.lot-card[data-rarity="legendary"] {
+  --lot-glow: var(--color-gold);
+}
+.lot-card[data-rarity="relic"] {
+  --lot-glow: var(--color-magenta);
+}
+
+.lot-card.is-held,
+.lot-card:focus-within {
+  border-color: #ffffff;
+}
+
+.lot-card.is-shimmer::before {
+  content: none;
+}
+
+.lot-card.is-focus {
+  outline: 2px solid var(--color-ok);
+  outline-offset: 2px;
+}
+
+.lot-in {
+  animation: lot-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lot-preview {
+  background:
+    linear-gradient(160deg, color-mix(in oklab, var(--lot-glow) 28%, transparent), transparent 62%),
+    var(--color-bg);
+}
+
+@keyframes ticker-run {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes lot-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lot-card:hover {
+    border-color: var(--color-fg);
+  }
+}
+
+.fire-btn {
+  background: linear-gradient(180deg, #ffffff, #bdbdbd);
+  color: #000000;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.fire-btn:hover {
+  background: linear-gradient(180deg, #ffffff, #d4d4d4);
+}
+
+.astro-stage {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 8rem;
+  place-items: center;
+  overflow: visible;
+  border-radius: 1rem;
+  background: #000000;
+}
+
+.astro-stage.is-mini {
+  width: 6.5rem;
+  height: 6.5rem;
+  min-height: 0;
+  background: transparent;
+}
+
+.astro-stage.is-circle,
+.astro-stage.is-mini.is-circle {
+  width: 8rem;
+  height: 8rem;
+  min-height: 0;
+  border-radius: 50%;
+  background: transparent;
+  overflow: visible;
+}
+
+.astro-stage.is-mini.is-circle {
+  width: 6.5rem;
+  height: 6.5rem;
+}
+
+.astro-face {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  height: 4.4rem;
+  width: 4.4rem;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--color-bg-subtle);
+  border: 3px solid var(--color-bg-elevated);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.astro-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5.6rem;
+  height: 5.6rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  box-sizing: border-box;
+  aspect-ratio: 1;
+}
+
+.astro-ring::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, transparent 0 72%, #ffffff 90%, transparent 100%);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  animation: astro-spin 1.15s linear infinite;
+}
+
+.astro-plate {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 999px;
+  padding: 0.45rem 1rem 0.45rem 0.4rem;
+  background: var(--color-bg-subtle);
+}
+
+.astro-plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.85) 50%, transparent 80%);
+  transform: translateX(-120%);
+  animation: koba-sweep 1.35s ease-in-out infinite;
+}
+
+.astro-burst,
+.astro-burst::after {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 5.2rem;
+  width: 5.2rem;
+  margin: -2.6rem 0 0 -2.6rem;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  animation: astro-burst 1.25s ease-out infinite;
+}
+
+.astro-burst::after {
+  content: "";
+  border-color: #ffffff;
+  animation-delay: 0.42s;
+}
+
+.astro-banner {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, #000 0%, #fff 50%, #000 100%);
+  background-size: 240% 100%;
+  animation: astro-slide 2.2s linear infinite;
+}
+
+.astro-sticker {
+  display: grid;
+  height: 2.4rem;
+  width: 2.4rem;
+  place-items: center;
+  border-radius: 0.7rem;
+  background: var(--color-bg-subtle);
+  font-size: 0.7rem;
+  font-weight: 600;
+  animation: astro-pop 0.9s ease-in-out infinite;
+}
+
+@keyframes astro-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.xp-gain {
+  animation: xp-gain 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes xp-gain {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xp-gain {
+    animation: none;
+  }
+}
+
+@keyframes astro-burst {
+  0% {
+    transform: scale(0.28);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+}
+
+@keyframes astro-slide {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes astro-pop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .astro-ring,
+  .astro-burst,
+  .astro-burst::after,
+  .astro-banner,
+  .astro-plate::after,
+  .astro-sticker {
+    animation-duration: 1.2s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
+.clip-play {
+  background:
+    linear-gradient(160deg, color-mix(in oklab, #ffffff 18%, transparent), transparent 55%),
+    var(--color-bg);
+}
+
+.clip-play.is-on::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent, color-mix(in oklab, white 28%, transparent), transparent);
+  animation: koba-sweep 0.9s linear infinite;
+}
+
+/* ---- Theme switch --------------------------------------------------------
+   The icon is chosen by the document's data-theme attribute, not React state,
+   so the correct glyph is painted before hydration and never flips. */
+.theme-icon-sun {
+  display: none;
+}
+html[data-theme="light"] .theme-icon-sun {
+  display: block;
+}
+html[data-theme="light"] .theme-icon-moon {
+  display: none;
+}
+
+/* The KOBA wordmark and mark carry their own white fill, black keyline and red
+   drop, so they read on both canvases and must never be inverted - inverting
+   the mark would turn the drop cyan. */
+html[data-theme="light"] img[src*="/brand/koba-wordmark"]:not(.profile-banner-mark),
+html[data-theme="light"] img[src*="/brand/koba-mark"]:not(.profile-banner-mark) {
+  filter: none;
+}
+
+/* …but "reads on both canvases" is only true of the keyline and the drop: the
+   letter fill is pure white, so 26.8% of the artwork disappears against the
+   white light-mode header and the logo degrades to an outline. Light mode swaps
+   in an ink-filled twin of the same drawing (red drop and black keyline
+   untouched, background still transparent).
+   Scoped to the two wordmarks, which only ever sit on the light canvas;
+   `koba-mark` is excluded because both of its placements are on the dark hero,
+   and `.profile-banner-mark` is the dark shop/profile banner slot. */
+html[data-theme="light"] img[src$="koba-wordmark-tight.png"] {
+  content: url("/brand/koba-wordmark-tight-ink.png");
+}
+
+html[data-theme="light"] img[src$="koba-wordmark.png"]:not(.profile-banner-mark) {
+  content: url("/brand/koba-wordmark-ink.png");
+}
+
+html[data-theme="light"] .site-social-icon {
+  filter: invert(1) brightness(0);
+}
+
+/* Steam/Xbox marks are white artwork on a transparent field. */
+html[data-theme="light"] .platform-logo {
+  filter: invert(1);
+}
+
+/* ---- Badge collection ----------------------------------------------------
+   Earned badges keep their full artwork; locked badges use the same artwork
+   desaturated, so the shape and detail still read at a glance. */
+.badge-art {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: none;
+  transition: filter 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+.badge-art.is-locked {
+  filter: grayscale(1) contrast(0.96) brightness(1.02);
+  opacity: 0.62;
+}
+html[data-theme="light"] .badge-art.is-locked {
+  filter: grayscale(1) contrast(0.94) brightness(0.98);
+  opacity: 0.6;
+}
+
+@keyframes badge-rubberband {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  18% {
+    transform: scale(1.28) rotate(-5deg);
+  }
+  38% {
+    transform: scale(0.9) rotate(3deg);
+  }
+  58% {
+    transform: scale(1.16) rotate(-2deg);
+  }
+  78% {
+    transform: scale(0.97) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.badge-rubberband {
+  animation: badge-rubberband 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: 50% 60%;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -12vh;
+  width: 7px;
+  height: 16px;
+  border-radius: 1px;
+  background: var(--confetti-color, #ffffff);
+  opacity: 0;
+  animation: confetti-fall var(--confetti-duration, 2600ms) cubic-bezier(0.22, 0.61, 0.36, 1) var(--confetti-delay, 0ms) forwards;
+}
+
+.confetti-piece:nth-child(3n) {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.confetti-piece:nth-child(4n) {
+  width: 4px;
+  height: 22px;
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift, 0px), 118vh, 0) rotate(var(--confetti-spin, 720deg));
+  }
+}
+
+/* ---- Badge celebration overlay -------------------------------------------
+   The global award moment: confetti falls the full height of the page behind
+   a single crest card. No glow - a thin ring and a soft drop shadow only. */
+.badge-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+@keyframes badge-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.badge-celebration-card {
+  animation: badge-card-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow: 0 32px 90px -32px rgb(0 0 0 / 0.9);
+}
+
+html[data-theme="light"] .badge-celebration-card {
+  box-shadow: 0 32px 80px -32px rgb(0 0 0 / 0.3);
+}
+
+.badge-celebration-ring {
+  position: absolute;
+  height: 8.5rem;
+  width: 8.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  opacity: 0.85;
+}
+
+.badge-celebration-ring::after {
+  content: "";
+  position: absolute;
+  inset: -0.55rem;
+  border: 1px dashed var(--color-border);
+  border-radius: inherit;
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-rubberband,
+  .confetti-piece,
+  .badge-celebration-card {
+    animation: none;
+  }
+  .confetti-layer {
+    display: none;
+  }
+}
+
+/* ---- Profile banner placeholder -----------------------------------------
+   No uploaded banner: the card shows a quiet KOBA wordmark strip instead of a
+   grey slab. Light mode keeps it paper-white (the canvas is white and black
+   type; a grey wash reads as "the theme didn't change"), while dark mode lifts
+   it one step off the card so the edge is still visible. */
+.profile-banner-empty {
+  background: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border);
+}
+
+html[data-theme="light"] .profile-banner-empty {
+  background: #ffffff;
+  border-bottom-color: #e4e4e7;
+}
+
+/* The default banner is the KOBA wordmark, greyed out. On the black canvas a
+   16% white mark is plenty; on white the same value vanishes, so light mode
+   needs a darker, stronger mark to stay a visible placeholder. */
+.profile-banner-mark {
+  filter: grayscale(1);
+  opacity: 0.16;
+}
+
+html[data-theme="light"] .profile-banner-mark {
+  filter: grayscale(1) brightness(0.35);
+  opacity: 0.22;
+}
+
+/* ---- Earned badge tiles --------------------------------------------------
+   The artwork sits straight on the page - no card, panel, border or tier halo
+   around a badge. Locked badges are desaturated; earned badges show the art in
+   its own colours. The only motion is the rubber-band that plays on tap. */
+.badge-tile {
+  cursor: pointer;
+}
+
+.badge-tile:active .badge-art {
+  transform: scale(0.94);
+}
+
+.badge-tile:focus-visible {
+  outline: 2px solid var(--color-violet);
+  outline-offset: 2px;
+}
+

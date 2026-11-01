@@ -1,0 +1,25 @@
+
+Micro-Interactions & Animations
+
+Implementing subtle, purposeful animations can make the interface feel more responsive and dynamic.
+• Score & Session Counter (1,840 / +18):
+	• Counter Roll: When the user earns points during a session, animate the main score (1,840) rolling up to its new value rather than instantly changing.
+	• Float-Up Effect: The +18 this session text can pulse gently or briefly expand when points are actively added, followed by a small "+X" floating upward and fading out.
+• Badge Row (✔ 🗲 ⬥ ~ ✹ 🎁):
+	• Hover/Tap Reveal: Stagger a brief scale-up animation across the badges when the profile page first loads to draw the eye.
+	• Individual Physics: On desktop hover or mobile long-press, let the specific badge wiggle or tilt slightly to indicate it can be interacted with.
+• Navigation & Tab Bar Switching:
+	• Sliding Underline Indicator: When switching between Feed, Discover, Compete, and Rankings, let the purple active underline smoothly slide from one tab to the next.
+	• Icon Morphing: When shifting between the bottom navigation icons (Home, Groups, DMs, etc.), use a slight morphing or filled-to-outline transition to signify the active state.
+
+🕹️ Interactive Components
+
+These UI components will add depth to the current layout and give users more intuitive control over their data.
+• Badge Tooltips:
+	• Contextual Popups: Tapping or hovering over any of the status badges under the username should trigger a small, styled tooltip explaining what the achievement means (e.g., "Verified Creator," "Top Contributor").
+• Expanded Coin/Economy Dropdown:
+	• Quick-View Balance: Tapping the NA · 240 coins area should expand a small dropdown or mini-modal showing a breakdown of currency types, recent earnings, or a quick link to purchase history without leaving the page.
+• Dynamic "Open Shop" Button:
+	• Hover Glow & Click Ripple: Give the primary purple button a subtle, rhythmic ambient glow or a shimmer effect across its surface to drive conversions. Implement a material-style ripple effect upon being tapped.
+• Expandable "Form" Section:
+	• Collapsible Accordion: The FORM | 14 · rising widget looks like a summary card. Make this section tap-expandable, dropping down an embedded line graph or chart showing the user's performance history over the week.

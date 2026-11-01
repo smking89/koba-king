@@ -1,0 +1,106 @@
+Act as a Principal Full-Stack Software Engineer and System Architect. Generate a production-grade, highly secure App Store Engine exclusively for the platform layer at app.koba.games using Next.js (App Router), TypeScript, Tailwind CSS, and a PostgreSQL Prisma database schema. The frontend design must strictly adhere to the premium KOBA design matrix: a sleek, ultra-clean dark theme utilizing deep charcoals, vibrant neon accents, and crisp white typography.
+
+🌐 PLATFORM SCOPE & CONFIGURATION
+• Core Hostname: app.koba.games
+• Target Directory: All routing, absolute URL pathways, and environment configurations must implicitly lock down to the app.koba.games web domain framework.
+• Core Principle: The KOBAbot remains completely closed and lightweight. Third-party developers cannot write code that executes inside the bot. Instead, developers upload tool adapters, PC plugins, or external bots directly to this app store, which registers web hooks and handles license verification entirely at the platform tier.
+
+💸 MONETIZATION & FEES STRUCTURAL MATRIX
+The app store engine must enforce automated marketplace fee deductions at the database and API controller layers whenever an asset transaction occurs:
+1. Verified Status (Blue Badge): Developers with a verified profile status incur a reduced platform transaction fee of exactly 2.5%.
+2. Unverified Status: Standard developers without validation metrics incur a base platform transaction fee of exactly 3.0%.
+3. Billing Engine Flexibility: Every AppListing profile must support either a one-time checkout model ("BUY_NOW") or a recurring cycle model ("SUBSCRIPTION").
+
+🛡️ GOVERNANCE & MANDATORY STAFF VERIFICATION LIFECYCLE
+To maintain the safety and performance standards of the ecosystem, no listing can be published instantly.
+1. Approval Gates: When a developer submits an app, bot, or plugin via the developer console, its database status defaults strictly to PENDING_REVIEW.
+2. Discovery Enforcement: The marketplace API endpoints /api/v1/apps/browse must enforce a rigid query filter ensuring only items marked APPROVED by a KOBA staff user role can be displayed or purchased on app.koba.games. Unapproved files or details must be completely inaccessible to regular users.
+
+🏗️ ARCHITECTURAL REQUIREMENTS & CONSTRAINTS
+
+1. GLOBAL NAVIGATION MATRIX
+• Implement a persistent horizontal navigation header tracking standard layout views: "Browse Apps", "My Purchases", "Developer Portal", and "Licensing & Validation Hub". Include a user profile status module on the far right that displays the active user's persistent KOBAid profile.
+
+2. BROWSE & FILTERING INTERFACE
+• Create a high-contrast category filter bar to toggle between three platform asset classes: "Discord Bots", "PC Game Plugins", and "Dashboard Adapters".
+• Include a dynamic game-selection dropdown populated with native KOBA-supported titles: "Rust", "DayZ", "Ark", and "Minecraft".
+
+3. PRODUCT LISTING DISPLAY (THE APP GRID)
+• Build a responsive 3-column grid layout for application cards. Only query and present listings that have successfully passed the manual KOBA staff verification check.
+• Each card must display: an application thumbnail placeholder, App Name, Developer Profile Name, a high-contrast visual "Blue Badge" element if the developer is verified, Game Title Tag, Rarity Tier indicator, and Pricing Banner.
+
+4. DYNAMIC LINK GENERATION & ANTI-PIRACY ROUTE
+• Build a secure backend API route (app.koba.games/api/v1/plugins/download) that handles the anti-piracy validation engine.
+• When an authorized user clicks "Generate Download Link", the server must verify the session, pull their unique KOBAid, confirm active database ownership records, and return a cryptographically signed, randomized one-time download token string with a strict 60-second expiration lifecycle.
+
+5. PRISMA DATABASE MODEL SCHEMAS
+Provide the explicit Prisma database schema models required to support this app store engine, tracking staff approval workflows, financial splits, and verification badges:
+
+prisma
+enum Role {
+  PLAYER
+  BUSINESS
+  STAFF
+}
+
+enum AppStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id                 String       @id @default(uuid())
+  kobaId             String       @unique // The unique system-wide fingerprint
+  email              String       @unique
+  role               Role         @default(PLAYER)
+  isVerifiedDeveloper Boolean      @default(false) // Controls 2.5% (true) vs 3.0% (false) fee tier
+  purchases          Purchase[]
+  apps               AppListing[]
+  createdAt          DateTime     @default(now())
+}
+
+model AppListing {
+  id            String          @id @default(uuid())
+  name          String
+  developerId   String
+  developer     User            @relation(fields: [developerId], references: [id])
+  type          String          // "BOT", "PLUGIN", "ADAPTER"
+  game          String          // "RUST", "DAYZ", "ARK", "MINECRAFT"
+  rarityTier    String          // "COMMON" through "RELIC"
+  billingModel  String          // "BUY_NOW" or "SUBSCRIPTION"
+  basePrice     Int             // Stored in cents (\$10.00 = 1000)
+  metaUrl       String          // Content or storage path
+  status        AppStatus       @default(PENDING_REVIEW) // Strictly requires manual STAFF approval
+  verifiedBy    String?         // Stores the KOBAid of the staff member who approved it
+  purchases     Purchase[]
+  tokens        DownloadToken[]
+  createdAt     DateTime        @default(now())
+}
+
+model Purchase {
+  id              String     @id @default(uuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id])
+  appId           String
+  app             AppListing @relation(fields: [appId], references: [id])
+  licenseKey      String     @unique
+  billingModel    String     
+  amountPaidTotal Int        
+  platformFeeCharged Int     
+  developerPayout Int        
+  subscriptionEnd DateTime?  
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+}
+
+model DownloadToken {
+  id          String     @id @default(uuid())
+  tokenString String     @unique
+  appId       String
+  app         AppListing @relation(fields: [appId], references: [id])
+  kobaId      String     
+  isUsed      Boolean    @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime   @default(now())
+}

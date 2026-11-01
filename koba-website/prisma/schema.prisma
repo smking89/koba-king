@@ -1,0 +1,80 @@
+// App store models for app.koba.games.
+// Third-party code never runs inside KOBAbot. Listings, fees, and download tokens live here.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PLAYER
+  BUSINESS
+  STAFF
+}
+
+enum AppStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id                  String       @id @default(uuid())
+  kobaId              String       @unique
+  email               String       @unique
+  name                String
+  role                Role         @default(PLAYER)
+  isVerifiedDeveloper Boolean      @default(false)
+  purchases           Purchase[]
+  apps                AppListing[]
+  createdAt           DateTime     @default(now())
+}
+
+model AppListing {
+  id           String          @id @default(uuid())
+  name         String
+  developerId  String
+  developer    User            @relation(fields: [developerId], references: [id])
+  type         String
+  game         String
+  rarityTier   String
+  billingModel String
+  basePrice    Int
+  metaUrl      String
+  status       AppStatus       @default(PENDING_REVIEW)
+  verifiedBy   String?
+  purchases    Purchase[]
+  tokens       DownloadToken[]
+  createdAt    DateTime        @default(now())
+}
+
+model Purchase {
+  id                 String     @id @default(uuid())
+  userId             String
+  user               User       @relation(fields: [userId], references: [id])
+  appId              String
+  app                AppListing @relation(fields: [appId], references: [id])
+  licenseKey         String     @unique
+  billingModel       String
+  amountPaidTotal    Int
+  platformFeeCharged Int
+  developerPayout    Int
+  subscriptionEnd    DateTime?
+  isActive           Boolean    @default(true)
+  createdAt          DateTime   @default(now())
+}
+
+model DownloadToken {
+  id          String     @id @default(uuid())
+  tokenString String     @unique
+  appId       String
+  app         AppListing @relation(fields: [appId], references: [id])
+  kobaId      String
+  isUsed      Boolean    @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime   @default(now())
+}

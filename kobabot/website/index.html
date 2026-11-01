@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/assets/kobabot-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KOBA Bot — Design System Demo</title>
+    <!-- Design-system fonts: these families are referenced in tokens.css
+         (--bb-font-display/body/mono/graffiti) but were never actually
+         loaded anywhere, so everything was silently falling back to the
+         system sans-serif. Loading them here fixes that for the whole app. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Orbitron:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Rubik+Wet+Paint&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bb-theme">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

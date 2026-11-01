@@ -1,0 +1,26 @@
+{
+  "name": "kobabot",
+  "version": "0.1.0",
+  "description": "KOBA Bot - Clan/Team War Event Manager & Roster Commander for Rust Console Edition (WebRCON)",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "deploy-commands": "node deploy-commands.js",
+    "rebuild-sqlite": "npm rebuild better-sqlite3",
+    "safe-install": "npm install",
+    "postinstall": "npm rebuild better-sqlite3"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.8",
+    "better-sqlite3": "^13.0.3",
+    "cron-parser": "^5.10.0",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.22.3",
+    "gif-encoder-2": "^1.0.5",
+    "pm2": "^7.0.4",
+    "stripe": "^23.1.0",
+    "ws": "^8.17.1"
+  }
+}

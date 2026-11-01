@@ -1,0 +1,601 @@
+/* ==========================================================================
+   KOBABOT DESIGN SYSTEM — COMPONENTS
+   Plain CSS, built entirely on tokens.css custom properties. Import tokens.css
+   first. Class names follow the `bb-` namespace + BEM modifiers, see
+   DESIGN_SYSTEM.md § Naming Conventions.
+   ========================================================================== */
+
+@import url("./tokens.css");
+
+*,*::before,*::after { box-sizing: border-box; }
+img, svg { max-width: 100%; height: auto; display: block; }
+
+body.bb-theme {
+  background: var(--bb-gradient-bg-hero), var(--bb-bg-base);
+  color: var(--bb-text-primary);
+  font-family: var(--bb-font-body);
+  font-size: var(--bb-text-base);
+  line-height: var(--bb-leading-normal);
+}
+
+/* ---------------------------------------------------------------------- *
+ * TYPOGRAPHY
+ * ---------------------------------------------------------------------- */
+.bb-display    { font-family: var(--bb-font-display); font-weight: 700; letter-spacing: var(--bb-tracking-tight); line-height: var(--bb-leading-tight); }
+.bb-h1         { font-family: var(--bb-font-display); font-weight: 700; letter-spacing: var(--bb-tracking-tight); line-height: var(--bb-leading-tight); font-size: var(--bb-text-3xl); }
+.bb-h2         { font-family: var(--bb-font-display); font-weight: 700; letter-spacing: var(--bb-tracking-tight); line-height: var(--bb-leading-tight); font-size: var(--bb-text-2xl); }
+.bb-h3         { font-family: var(--bb-font-display); font-weight: 700; letter-spacing: var(--bb-tracking-tight); line-height: var(--bb-leading-tight); font-size: var(--bb-text-xl); }
+.bb-h4         { font-family: var(--bb-font-body); font-weight: 700; font-size: var(--bb-text-lg); line-height: var(--bb-leading-snug); }
+.bb-eyebrow    { font-family: var(--bb-font-body); font-weight: 600; font-size: var(--bb-text-xs); letter-spacing: var(--bb-tracking-widest); text-transform: uppercase; color: var(--bb-text-secondary); }
+.bb-body       { font-size: var(--bb-text-base); color: var(--bb-text-primary); }
+.bb-body-sm    { font-size: var(--bb-text-sm); color: var(--bb-text-secondary); }
+.bb-caption    { font-size: var(--bb-text-xs); color: var(--bb-text-muted); }
+.bb-mono       { font-family: var(--bb-font-mono); font-size: var(--bb-text-sm); }
+.bb-gradient-text {
+  background: linear-gradient(90deg, var(--bb-brand-green) 0%, #B6FFCF 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.bb-gradient-text--purple {
+  background: linear-gradient(90deg, var(--bb-brand-purple) 0%, #F0C6FF 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* Graffiti — spray-paint brush accent for hype taglines only
+   ("More Players. More Fun."). Never use for body copy or headings that
+   need to stay legible/dense — this is a decorative flourish. */
+.bb-graffiti {
+  font-family: var(--bb-font-graffiti);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1024px) {
+  .bb-h1 { font-size: var(--bb-text-4xl); }
+  .bb-h2 { font-size: var(--bb-text-3xl); }
+}
+
+/* ---------------------------------------------------------------------- *
+ * BUTTONS — bb-btn, bb-btn--{variant}, bb-btn--{size}
+ * ---------------------------------------------------------------------- */
+.bb-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--bb-space-2);
+  font-family: var(--bb-font-body); font-weight: 700; font-size: var(--bb-text-sm);
+  letter-spacing: var(--bb-tracking-wide);
+  padding: var(--bb-space-3) var(--bb-space-5);
+  border-radius: var(--bb-radius-md);
+  border: var(--bb-border-w-default) solid transparent;
+  cursor: pointer; user-select: none;
+  transition: transform var(--bb-duration-fast) var(--bb-ease-out),
+              box-shadow var(--bb-duration-base) var(--bb-ease-out),
+              background var(--bb-duration-base) var(--bb-ease-out);
+}
+.bb-btn:active { transform: translateY(1px) scale(0.99); }
+.bb-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+.bb-btn--primary {
+  background: var(--bb-gradient-cta-green);
+  color: var(--bb-text-on-accent);
+  box-shadow: var(--bb-glow-green-sm);
+}
+.bb-btn--primary:hover:not(:disabled) { box-shadow: var(--bb-glow-green-md); }
+
+.bb-btn--purple {
+  background: var(--bb-gradient-cta-purple);
+  color: #FFFFFF;
+  box-shadow: var(--bb-glow-purple-sm);
+}
+.bb-btn--purple:hover:not(:disabled) { box-shadow: var(--bb-glow-purple-md); }
+
+.bb-btn--outline {
+  background: transparent;
+  border-color: var(--bb-border-strong);
+  color: var(--bb-brand-green);
+}
+.bb-btn--outline:hover:not(:disabled) { background: rgba(57,255,106,0.08); box-shadow: var(--bb-glow-green-sm); }
+
+.bb-btn--ghost {
+  background: transparent; border-color: transparent;
+  color: var(--bb-text-secondary);
+}
+.bb-btn--ghost:hover:not(:disabled) { color: var(--bb-text-primary); background: var(--bb-bg-raised-2); }
+
+.bb-btn--danger {
+  background: var(--bb-status-danger); color: #fff;
+}
+
+.bb-btn--sm { padding: var(--bb-space-2) var(--bb-space-4); font-size: var(--bb-text-xs); border-radius: var(--bb-radius-sm); }
+.bb-btn--lg { padding: var(--bb-space-4) var(--bb-space-8); font-size: var(--bb-text-md); border-radius: var(--bb-radius-lg); }
+.bb-btn--block { width: 100%; }
+.bb-btn--icon { padding: var(--bb-space-2); border-radius: var(--bb-radius-sm); }
+
+/* ---------------------------------------------------------------------- *
+ * CARDS & PANELS — bb-card, bb-card--{variant}
+ * ---------------------------------------------------------------------- */
+.bb-card {
+  position: relative;
+  background: var(--bb-gradient-card);
+  border: var(--bb-border-w-default) solid var(--bb-border-default);
+  border-radius: var(--bb-radius-lg);
+  padding: var(--bb-space-6);
+  box-shadow: var(--bb-shadow-md);
+}
+
+/* Ribbon — a badge pinned on the card's top border rather than flowing
+   inline, for "Most Popular"/"Best Value" callouts. Requires a bb-card
+   (or any position:relative ancestor) parent. */
+.bb-ribbon {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 1;
+}
+
+/* Interactive card "lighting" — hover brightens the border glow and lifts
+   the card; click gives an instant brighter flash + press-down feedback.
+   Variant-specific glow color is picked up automatically since --bb-glow-*
+   swaps per bb-card--{basic,pro,max} below. */
+.bb-card--interactive {
+  --bb-card-glow-hover: var(--bb-glow-green-md);
+  --bb-card-glow-active: var(--bb-glow-green-lg);
+  transition: box-shadow var(--bb-duration-base) var(--bb-ease-out),
+              transform var(--bb-duration-fast) var(--bb-ease-out),
+              border-color var(--bb-duration-base) var(--bb-ease-out);
+}
+.bb-card--interactive:hover {
+  box-shadow: var(--bb-shadow-md), var(--bb-card-glow-hover);
+  border-color: var(--bb-border-strong);
+  transform: translateY(-4px);
+}
+.bb-card--interactive:active {
+  box-shadow: var(--bb-shadow-md), var(--bb-card-glow-active);
+  transform: translateY(-1px) scale(0.99);
+  transition-duration: var(--bb-duration-fast);
+}
+.bb-card--basic.bb-card--interactive {
+  --bb-card-glow-hover: var(--bb-glow-green-md);
+  --bb-card-glow-active: var(--bb-glow-green-lg);
+}
+.bb-card--pro.bb-card--interactive {
+  --bb-card-glow-hover: var(--bb-glow-gold-md);
+  --bb-card-glow-active: var(--bb-glow-gold-md);
+}
+.bb-card--max.bb-card--interactive {
+  --bb-card-glow-hover: var(--bb-glow-purple-md);
+  --bb-card-glow-active: var(--bb-glow-purple-lg);
+}
+.bb-card--pro.bb-card--interactive:hover,
+.bb-card--max.bb-card--interactive:hover { border-color: currentColor; }
+
+/* Uniform product/plan card frame — every card in a pricing-style grid
+   gets the same footprint regardless of content length, and the same
+   fixed-height slot for its artwork so chest/badge art of differing
+   native sizes still reads as one consistent frame. */
+.bb-plan-card { display: flex; flex-direction: column; min-height: 480px; }
+.bb-plan-card__art {
+  display: flex; align-items: center; justify-content: center;
+  height: 140px; margin-bottom: var(--bb-space-3);
+}
+.bb-plan-card__art img { max-height: 100%; width: auto; object-fit: contain; }
+
+/* Cover variant — for product art (Boom Coin packs) that is already a
+   full-bleed poster-style asset. Bleeds edge to edge past the card's own
+   padding on the top/left/right; object-fit:contain so none of the
+   image's own baked-in title/label text is ever cropped off. */
+.bb-plan-card__art--cover {
+  height: 220px;
+  margin: calc(-1 * var(--bb-space-6)) calc(-1 * var(--bb-space-6)) var(--bb-space-4);
+  border-radius: var(--bb-radius-lg) var(--bb-radius-lg) 0 0;
+  overflow: hidden;
+  background: var(--bb-bg-void);
+}
+.bb-plan-card__art--cover img { width: 100%; height: 100%; object-fit: contain; }
+
+/* Shelf — bordered price strip pinned to the bottom of a plan/product
+   card, echoing the reference frame's card-with-a-shelf treatment.
+   Border color is inherited from the card's own tier accent (currentColor)
+   so bb-card--basic/pro/max automatically tint it correctly. */
+.bb-plan-card__shelf {
+  margin-top: auto;
+  padding: var(--bb-space-2) var(--bb-space-3);
+  border: var(--bb-border-w-default) solid currentColor;
+  border-radius: var(--bb-radius-sm);
+  text-align: center;
+  font-family: var(--bb-font-mono);
+  font-weight: 700;
+}
+.bb-card--basic .bb-plan-card__shelf { color: var(--bb-brand-green); }
+.bb-card--pro .bb-plan-card__shelf { color: var(--bb-brand-gold); }
+.bb-card--max .bb-plan-card__shelf { color: var(--bb-brand-purple); }
+
+.bb-card--basic {
+  border-color: var(--bb-border-default);
+  box-shadow: var(--bb-shadow-md), var(--bb-glow-green-sm);
+}
+.bb-card--pro {
+  border-color: var(--bb-border-gold);
+  box-shadow: var(--bb-shadow-md), var(--bb-glow-gold-sm);
+}
+.bb-card--max {
+  border-color: var(--bb-border-purple);
+  box-shadow: var(--bb-shadow-md), var(--bb-glow-purple-sm);
+}
+.bb-card--flat { box-shadow: none; background: var(--bb-bg-raised); }
+
+/* Panel = card variant used for consoles / RCON / server-log surfaces */
+.bb-panel {
+  background: var(--bb-bg-void);
+  border: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-lg);
+  overflow: hidden;
+}
+.bb-panel__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--bb-space-4) var(--bb-space-5);
+  border-bottom: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  background: var(--bb-bg-raised);
+}
+.bb-panel__body {
+  padding: var(--bb-space-5);
+  background-image: var(--bb-gradient-scanline);
+}
+.bb-panel--console .bb-panel__body {
+  font-family: var(--bb-font-mono); font-size: var(--bb-text-sm);
+  color: var(--bb-brand-green); line-height: var(--bb-leading-snug);
+  max-height: 320px; overflow-y: auto;
+}
+
+/* Terminal — flat, 2D "code editor" window for decorative/preview log
+   snippets (e.g. the hero's Server Logs card). Deliberately flatter than
+   .bb-panel--console: no glow, tighter radius, classic red/yellow/green
+   window dots — the full-page live console (ServerDashboard) still uses
+   .bb-panel--console for its extra depth. */
+.bb-terminal {
+  background: var(--bb-bg-void);
+  border: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-sm);
+  overflow: hidden;
+  font-family: var(--bb-font-mono);
+}
+.bb-terminal__header {
+  display: flex; align-items: center; gap: var(--bb-space-2);
+  padding: var(--bb-space-2) var(--bb-space-3);
+  background: var(--bb-bg-raised);
+  border-bottom: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+}
+.bb-terminal__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.bb-terminal__dot--red { background: #ff5f56; }
+.bb-terminal__dot--yellow { background: #ffbd2e; }
+.bb-terminal__dot--green { background: #27c93f; }
+.bb-terminal__title {
+  margin-left: var(--bb-space-2);
+  font-family: var(--bb-font-body);
+  font-size: var(--bb-text-xs);
+  color: var(--bb-text-secondary);
+}
+.bb-terminal__body {
+  padding: var(--bb-space-3);
+  font-size: var(--bb-text-xs);
+  color: var(--bb-brand-green);
+  line-height: 1.7;
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-word;
+}
+.bb-terminal__body p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bb-terminal__footer {
+  display: flex; flex-wrap: wrap; gap: var(--bb-space-2);
+  padding: var(--bb-space-3);
+  border-top: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+}
+
+/* Console tilt — 3D perspective wrapper for the hero's terminal preview.
+   Sets up the 3D context; the actual rotateX/rotateY/skew is applied
+   inline (the one sanctioned inline-style exception) since Tailwind's
+   config has no matching transform utility for this exact angle. */
+.bb-console-tilt {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+/* Site footer — copyright bar shown at the bottom of every page via
+   RootLayout. Stacked/centered on mobile, single row on desktop. */
+.bb-site-footer {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--bb-space-3);
+  margin-top: var(--bb-space-10);
+  padding: var(--bb-space-6) 0;
+  border-top: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  text-align: center;
+}
+.bb-site-footer__links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--bb-space-4); }
+
+/* Top-right hamburger menu (fixed, floats above every page - see src/HamburgerMenu.jsx) */
+.bb-hamburger { position: fixed; top: var(--bb-space-4); right: var(--bb-space-4); z-index: 50; }
+.bb-hamburger__button {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: var(--bb-radius-md);
+  background: var(--bb-bg-raised); border: var(--bb-border-w-default) solid var(--bb-border-default);
+  color: var(--bb-text-primary); cursor: pointer;
+}
+.bb-hamburger__button:hover { border-color: var(--bb-border-strong); }
+.bb-hamburger__panel {
+  position: absolute; top: calc(100% + var(--bb-space-2)); right: 0;
+  min-width: 180px; padding: var(--bb-space-2);
+  background: var(--bb-bg-raised); border: var(--bb-border-w-default) solid var(--bb-border-default);
+  border-radius: var(--bb-radius-md); box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: flex; flex-direction: column; gap: var(--bb-space-1);
+}
+.bb-hamburger__link {
+  display: flex; align-items: center; gap: var(--bb-space-2);
+  padding: var(--bb-space-2) var(--bb-space-3); border-radius: var(--bb-radius-sm);
+  color: var(--bb-text-primary); font-size: 14px; font-weight: 600;
+}
+.bb-hamburger__link:hover { background: var(--bb-bg-raised-2); }
+@media (min-width: 768px) {
+  .bb-site-footer { flex-direction: row; text-align: center; }
+}
+
+/* Stat tile — compact metric card (players online, servers, revenue…) */
+.bb-stat {
+  display: flex; flex-direction: column; gap: var(--bb-space-1);
+  padding: var(--bb-space-4);
+  border-radius: var(--bb-radius-md);
+  border: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  background: var(--bb-bg-raised-2);
+}
+.bb-stat__value { font-family: var(--bb-font-display); font-size: var(--bb-text-xl); color: var(--bb-text-primary); }
+.bb-stat__label { font-size: var(--bb-text-xs); color: var(--bb-text-secondary); text-transform: uppercase; letter-spacing: var(--bb-tracking-wide); }
+
+/* ---------------------------------------------------------------------- *
+ * BADGES / PILLS / STATUS — bb-badge, bb-status-dot
+ * ---------------------------------------------------------------------- */
+.bb-badge {
+  display: inline-flex; align-items: center; gap: var(--bb-space-1);
+  font-size: var(--bb-text-xs); font-weight: 700; letter-spacing: var(--bb-tracking-wide);
+  padding: var(--bb-space-1) var(--bb-space-3);
+  border-radius: var(--bb-radius-pill);
+  background: rgba(57,255,106,0.12); color: var(--bb-brand-green);
+  border: var(--bb-border-w-hairline) solid var(--bb-border-default);
+}
+.bb-badge--gold   { background: rgba(255,201,60,0.14); color: var(--bb-brand-gold); border-color: var(--bb-border-gold); }
+.bb-badge--purple { background: rgba(177,76,255,0.14); color: var(--bb-brand-purple); border-color: var(--bb-border-purple); }
+/* Ribbon callouts ("Best Annual Value" etc.) need to read at a glance over
+   a busy card - filled solid rather than the translucent .bb-badge--purple
+   used for inline pills elsewhere, same treatment .bb-badge--solid already
+   gets for the gold ribbon. */
+.bb-ribbon.bb-badge--purple { background: var(--bb-brand-purple); color: var(--bb-text-on-accent); border: none; }
+.bb-ribbon.bb-badge--green { background: var(--bb-brand-green); color: var(--bb-text-on-accent); border: none; }
+.bb-badge--solid  {
+  background: var(--bb-gradient-badge-gold); color: var(--bb-text-on-accent); border: none;
+  box-shadow: var(--bb-glow-gold-md);
+}
+
+.bb-status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--bb-status-online);
+  box-shadow: 0 0 0 0 rgba(57,255,106,0.6);
+  animation: bb-pulse var(--bb-pulse-duration) infinite;
+}
+@keyframes bb-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(57,255,106,0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(57,255,106,0); }
+  100% { box-shadow: 0 0 0 0 rgba(57,255,106,0); }
+}
+
+
+/* ---------------------------------------------------------------------- *
+ * NAVIGATION — bb-navbar (desktop top nav), bb-tabbar (mobile bottom nav)
+ * ---------------------------------------------------------------------- */
+.bb-navbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--bb-space-6);
+  padding: var(--bb-space-4) var(--bb-space-8);
+  background: rgba(8,12,10,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  position: sticky; top: 0; z-index: var(--bb-z-nav);
+}
+.bb-navbar__logo { display: flex; align-items: center; gap: var(--bb-space-3); }
+.bb-navbar__logo img { height: 32px; width: auto; }
+.bb-navbar__links { display: flex; align-items: center; gap: var(--bb-space-6); }
+.bb-navbar__link {
+  font-size: var(--bb-text-sm); font-weight: 600; color: var(--bb-text-secondary);
+  text-decoration: none; padding: var(--bb-space-2) 0; position: relative;
+}
+.bb-navbar__link:hover, .bb-navbar__link--active { color: var(--bb-brand-green); }
+.bb-navbar__link--active::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px;
+  background: var(--bb-brand-green); box-shadow: var(--bb-glow-green-sm); border-radius: var(--bb-radius-pill);
+}
+
+.bb-tabbar {
+  display: flex; justify-content: space-around; align-items: center;
+  padding: var(--bb-space-2) var(--bb-space-2) var(--bb-space-3);
+  background: rgba(8,12,10,0.95);
+  border-top: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: var(--bb-z-nav);
+}
+.bb-tabbar__item {
+  display: flex; flex-direction: column; align-items: center; gap: var(--bb-space-1);
+  font-size: var(--bb-text-xs); color: var(--bb-text-muted);
+  text-decoration: none; flex: 1; padding: var(--bb-space-1) 0;
+}
+.bb-tabbar__item--active { color: var(--bb-brand-green); }
+.bb-tabbar__item--active svg, .bb-tabbar__item--active .bb-icon { filter: drop-shadow(0 0 6px rgba(57,255,106,0.7)); }
+
+/* Hide navbar / tabbar based on breakpoint (mobile-first: tabbar default) */
+.bb-navbar { display: none; }
+@media (min-width: 1024px) {
+  .bb-navbar { display: flex; }
+  .bb-tabbar { display: none; }
+}
+
+/* Mobile header — top bar shown only below the 1024px nav breakpoint
+   (the exact inverse of .bb-navbar): hamburger menu, logo lockup, and a
+   notification bell. Desktop uses .bb-navbar instead; the two are never
+   shown at the same time. */
+.bb-mobile-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--bb-space-4) var(--bb-space-5);
+  background: rgba(8, 12, 10, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  position: sticky; top: 0; z-index: var(--bb-z-nav);
+}
+.bb-mobile-header__logo { display: flex; align-items: center; gap: var(--bb-space-2); }
+.bb-mobile-header__logo img { height: 28px; width: auto; }
+.bb-mobile-header__icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: var(--bb-radius-sm);
+  border: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  color: var(--bb-text-secondary);
+  background: transparent;
+  position: relative;
+}
+.bb-mobile-header__dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--bb-brand-green);
+  box-shadow: var(--bb-glow-green-sm);
+}
+@media (min-width: 1024px) { .bb-mobile-header { display: none; } }
+
+/* Quick access — icon-tile shortcut grid shown on mobile home screens
+   (Shop / Servers / Support / Account). Desktop relies on .bb-navbar links
+   instead, so this is hidden at lg+. */
+.bb-quick-access { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--bb-space-3); }
+.bb-quick-access__item {
+  display: flex; flex-direction: column; align-items: center; gap: var(--bb-space-2);
+  padding: var(--bb-space-4) var(--bb-space-2);
+  border-radius: var(--bb-radius-md);
+  border: var(--bb-border-w-hairline) solid var(--bb-border-subtle);
+  background: var(--bb-bg-raised-2);
+  color: var(--bb-text-secondary);
+  text-decoration: none;
+  font-size: var(--bb-text-xs);
+  font-weight: 600;
+  transition: border-color var(--bb-duration-base) var(--bb-ease-out), color var(--bb-duration-base) var(--bb-ease-out);
+}
+.bb-quick-access__item:hover { border-color: var(--bb-border-default); color: var(--bb-brand-green); }
+@media (min-width: 1024px) { .bb-quick-access { display: none; } }
+
+/* ---------------------------------------------------------------------- *
+ * FORMS — bb-input, bb-select
+ * ---------------------------------------------------------------------- */
+.bb-input, .bb-select {
+  width: 100%;
+  background: var(--bb-bg-raised-2);
+  border: var(--bb-border-w-default) solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-sm);
+  padding: var(--bb-space-3) var(--bb-space-4);
+  color: var(--bb-text-primary);
+  font-size: var(--bb-text-sm);
+  transition: border-color var(--bb-duration-base) var(--bb-ease-out), box-shadow var(--bb-duration-base) var(--bb-ease-out);
+}
+.bb-input::placeholder { color: var(--bb-text-muted); }
+.bb-input:focus, .bb-select:focus {
+  outline: none; border-color: var(--bb-border-strong); box-shadow: var(--bb-glow-green-sm);
+}
+
+/* ---------------------------------------------------------------------- *
+ * LAYOUT HELPERS
+ * ---------------------------------------------------------------------- */
+.bb-container { width: 100%; max-width: 1920px; margin-inline: auto; padding-inline: var(--bb-space-5); }
+@media (min-width: 1536px) { .bb-container { padding-inline: var(--bb-space-10); } }
+.bb-grid { display: grid; gap: var(--bb-space-5); grid-template-columns: 1fr; }
+@media (min-width: 768px)  { .bb-grid--2 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .bb-grid--3 { grid-template-columns: repeat(3, 1fr); } .bb-grid--4 { grid-template-columns: repeat(4, 1fr); } }
+
+/* Reserves vertical space equal to the fixed mobile tab bar (.bb-tabbar) so
+   page content never sits underneath it. Mobile-only: matches .bb-tabbar's
+   own visibility breakpoint and becomes a no-op at lg (1024px) and up,
+   where the tab bar is hidden and a navbar is used instead. */
+.bb-spacer-bottom { padding-bottom: var(--bb-tabbar-height); }
+@media (min-width: 1024px) { .bb-spacer-bottom { padding-bottom: 0; } }
+
+/* Responsive breakpoint reference (mirrors --bb-bp-* tokens):
+   sm  480px  – large phones
+   md  768px  – tablets, nav breakpoint prep
+   lg  1024px – desktop nav + multi-column layouts kick in
+   xl  1280px – desktop max content width
+   2xl 1536px – wide monitors, extra side padding                        */
+
+/* ---------------------------------------------------------------------- *
+ * ANIMATION TOKENS — the only approved motion classes in the system.
+ * bb-anim-pulse, bb-anim-lift, bb-anim-slide-in, bb-anim-shimmer,
+ * bb-anim-icon, bb-anim-press. No other animation class is sanctioned.
+ * ---------------------------------------------------------------------- */
+@keyframes bb-anim-pulse-kf {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(57, 255, 106, 0.35)); }
+  50% { filter: drop-shadow(0 0 18px rgba(57, 255, 106, 0.8)); }
+}
+.bb-anim-pulse { animation: bb-anim-pulse-kf var(--bb-pulse-duration) ease-in-out infinite; }
+
+.bb-anim-lift {
+  transition: transform var(--bb-duration-base) var(--bb-ease-out),
+              box-shadow var(--bb-duration-base) var(--bb-ease-out),
+              border-color var(--bb-duration-base) var(--bb-ease-out);
+}
+.bb-anim-lift:hover {
+  transform: translateY(-4px);
+  border-color: var(--bb-border-strong);
+  box-shadow: var(--bb-shadow-md), var(--bb-glow-green-md);
+}
+.bb-card--pro.bb-anim-lift:hover { border-color: var(--bb-brand-gold); box-shadow: var(--bb-shadow-md), var(--bb-glow-gold-md); }
+.bb-card--max.bb-anim-lift:hover { border-color: var(--bb-brand-purple); box-shadow: var(--bb-shadow-md), var(--bb-glow-purple-md); }
+
+@keyframes bb-anim-slide-in-kf {
+  from { opacity: 0; transform: translateX(var(--bb-space-6)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.bb-anim-slide-in { animation: bb-anim-slide-in-kf var(--bb-duration-slow) var(--bb-ease-out) both; }
+
+.bb-anim-shimmer { position: relative; overflow: hidden; }
+.bb-anim-shimmer::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(240, 198, 255, 0.16) 50%, transparent 60%);
+  transform: translateX(-100%);
+  animation: bb-anim-shimmer-kf 3.2s ease-in-out infinite;
+}
+@keyframes bb-anim-shimmer-kf {
+  0% { transform: translateX(-100%); }
+  60%, 100% { transform: translateX(100%); }
+}
+
+.bb-anim-icon { transition: transform var(--bb-duration-fast) var(--bb-ease-out); }
+.bb-btn:hover .bb-anim-icon,
+a:hover .bb-anim-icon { transform: translateX(2px) scale(1.12); }
+
+.bb-anim-press { transition: transform var(--bb-duration-fast) var(--bb-ease-out); }
+.bb-anim-press:active { transform: scale(0.96); }
+
+/* Electric flicker — hover/press feedback for bb-anim-press buttons, an
+   irregular glow flicker standing in for "electricity" rather than a
+   smooth pulse. Color matches the button variant via separate keyframes
+   since box-shadow can't reference currentColor directly. */
+@keyframes bb-anim-press-electric-green {
+  0%, 100% { box-shadow: 0 0 4px 1px rgba(57, 255, 106, 0.5); }
+  20% { box-shadow: 0 0 16px 3px rgba(57, 255, 106, 0.95); }
+  40% { box-shadow: 0 0 2px 0 rgba(57, 255, 106, 0.3); }
+  60% { box-shadow: 0 0 20px 4px rgba(57, 255, 106, 1); }
+  80% { box-shadow: 0 0 6px 1px rgba(57, 255, 106, 0.6); }
+}
+@keyframes bb-anim-press-electric-purple {
+  0%, 100% { box-shadow: 0 0 4px 1px rgba(177, 76, 255, 0.5); }
+  20% { box-shadow: 0 0 16px 3px rgba(177, 76, 255, 0.95); }
+  40% { box-shadow: 0 0 2px 0 rgba(177, 76, 255, 0.3); }
+  60% { box-shadow: 0 0 20px 4px rgba(177, 76, 255, 1); }
+  80% { box-shadow: 0 0 6px 1px rgba(177, 76, 255, 0.6); }
+}
+.bb-anim-press:hover, .bb-anim-press:active {
+  animation: bb-anim-press-electric-green 0.5s steps(6, end);
+}
+.bb-btn--purple.bb-anim-press:hover, .bb-btn--purple.bb-anim-press:active {
+  animation: bb-anim-press-electric-purple 0.5s steps(6, end);
+}

@@ -1,0 +1,32 @@
+To transform developers.koba.games from a standard documentation directory into a high-leverage tool for external engineering teams, the developer portal must treat integration as a seamless, self-service experience.
+Because KOBA tracks real-time data across distinct engine hosting models (e.g., custom C# scripts for Rust/DayZ vs. official REST webhooks for VALORANT/CS2) [Thu, October 15, 2026 @ 11:04 PM], the portal should prioritize low friction, clear protocol execution, and data transparency.
+
+───
+
+🏛️ 1. Split-Architecture Schema Documentation
+The platform should divide onboarding pathways based on the external system's deployment style. Instead of a generic API guide, provide two optimized tracks:
+A. The Dedicated Server Track (Rust, DayZ, ARK, 7 Days to Die)
+• The Blueprint: Focus on building integrations around your custom C# PC Plugin logic [Thu, October 15, 2026 @ 11:13 PM].The Portal Deliverable: Provide downloadable, version-controlled .cs boilerplate plugins that handle low-level network performance safety checks, custom WebRCON consoles, and Dynamic Budget Stepping natively [Thu, October 15, 2026 @ 11:13 PM, Fri, October 16, 2026 @ 02:40 AM].
+B. The API-Driven Track (League of Legends, VALORANT, Apex Legends)
+• The Blueprint: Provide explicit JSON event payload structures that developers must hit to interact with the core engine database.The Portal Deliverable: Detailed documentation showing developers how to map raw external logs directly into your Normalized KOBA Event Model framework [Thu, October 15, 2026 @ 11:04 PM, Thu, October 15, 2026 @ 11:13 PM].
+
+───
+
+🛠️ 2. The Ingest Payload Reference (The Core Schema)
+To ensure consistency, provide an interactive, visual payload reference directly on the portal interface. Every incoming telemetry stream must validate against this structural layout:
+json
+{ "integration_metadata": { "koba_server_id": "srv_rust_us_east_091", "game_type": "RUST_CONSOLE", "payload_timestamp_utc": 1792120740 }, "event_envelope": { "event_type": "COMBAT_KILL", "cryptographic_signature": "0x7f8a9c...d3e2", "fps_at_execution": 59.4 }, "data_payload": { "actor_identity": "steam_76561198000000000", "target_identity": "epic_4a8b2c3d4e5f6a7b", "weapon_used": "AK47_RIFLE", "is_headshot": true, "combat_distance_meters": 142.5 } }
+
+Use code with caution.
+
+───
+
+🧪 3. Self-Service Developer Tools Matrix
+To prevent engineering bottlenecks and keep the integration process entirely automated, the developer portal dashboard should include three core tools:
+• Interactive Ingestion Sandbox: An active, web-based mock endpoint runner. Developers can copy-paste their raw game payloads and hit "Test Ingest" to see exactly how the platform's Zero-Trust Validation Gates evaluate their code strings, parsing structural errors instantly before writing to production tables [Thu, October 15, 2026 @ 11:04 PM].Automated Credential Rotation Engine: A secure utility interface where developers can instantly generate, audit, or rotate their short-lived Client Secret Integration Tokens without human staff assistance on admin.koba.games [Thu, October 15, 2026 @ 11:04 PM, Fri, October 16, 2026 @ 02:08 AM].SDK Status & Outage Analytics: Real-time logging charts plotting raw ingress transaction velocities, validation failure charts, drop rates from the Forgery Gate, and active bandwidth allocations [Fri, October 16, 2026 @ 02:40 AM].
+
+───
+
+🛡️ 4. Server-Side Security & Guardrails
+To protect the core network infrastructure, the portal's token engine must implement strict automated guardrails:
+• Stateless Token Verification: The developer portal handles credential generation, but the code backend must enforce strict, stateless verification on every single request [Fri, October 16, 2026 @ 02:08 AM]. If an integration token scales past predefined ingestion frequency limits, the server-side gateway will automatically drop the connection.Malicious Payload Protection: Emphasize in the documentation that all string variables passing through your webhooks are subjected to structural cleaning inside an isolated processing layer to completely neutralize code injection exploits

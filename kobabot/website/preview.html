@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<title>KOBA Bot Design System — Preview</title>
+<link rel="icon" href="./assets/kobabot-logo.png" />
+<link rel="stylesheet" href="./components.css" />
+<style>
+  .demo-section { padding: var(--bb-space-10) 0; border-bottom: 1px solid var(--bb-border-subtle); }
+  .demo-row { display: flex; flex-wrap: wrap; gap: var(--bb-space-4); align-items: center; margin-top: var(--bb-space-4); }
+  .swatch { width: 96px; }
+  .swatch__chip { height: 56px; border-radius: var(--bb-radius-sm); border: 1px solid var(--bb-border-subtle); }
+</style>
+</head>
+<body class="bb-theme">
+  <nav class="bb-navbar">
+    <div class="bb-navbar__logo">
+      <img src="./assets/kobabot-logo.png" alt="KOBA Bot logo" />
+      <span class="bb-h4">KOBABOT<span style="color:var(--bb-text-secondary); font-weight:400;">.STORE</span></span>
+    </div>
+    <div class="bb-navbar__links">
+      <a class="bb-navbar__link bb-navbar__link--active" href="#">Home</a>
+      <a class="bb-navbar__link" href="#">Shop</a>
+      <a class="bb-navbar__link" href="#">Servers</a>
+      <a class="bb-navbar__link" href="#">Support</a>
+      <a class="bb-navbar__link" href="#">Account</a>
+    </div>
+    <button class="bb-btn bb-btn--outline bb-btn--sm">Connect WebRCON</button>
+  </nav>
+
+  <div class="bb-container">
+
+    <section class="demo-section">
+      <span class="bb-eyebrow">KOBA Bot Design System</span>
+      <h1 class="bb-h1 bb-gradient-text">Work smarter with KOBA Bot Pro</h1>
+      <p class="bb-body" style="max-width:560px; color:var(--bb-text-secondary);">The ultimate server management platform for Rust Console Edition.</p>
+      <div class="demo-row">
+        <button class="bb-btn bb-btn--primary bb-btn--lg">30-Day Free Trial</button>
+        <button class="bb-btn bb-btn--outline">Open WebRCON</button>
+        <button class="bb-btn bb-btn--ghost">Learn more</button>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="bb-h3">Color tokens</h2>
+      <div class="demo-row">
+        <div class="swatch"><div class="swatch__chip" style="background:var(--bb-brand-green)"></div><span class="bb-caption">green</span></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--bb-brand-purple)"></div><span class="bb-caption">purple</span></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--bb-brand-gold)"></div><span class="bb-caption">gold</span></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--bb-bg-raised)"></div><span class="bb-caption">bg-raised</span></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--bb-bg-void)"></div><span class="bb-caption">bg-void</span></div>
+        <div class="swatch"><div class="swatch__chip" style="background:var(--bb-status-danger)"></div><span class="bb-caption">danger</span></div>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="bb-h3">Pricing cards</h2>
+      <div class="bb-grid bb-grid--3" style="margin-top:var(--bb-space-4);">
+        <div class="bb-card bb-card--interactive">
+          <img src="./assets/chest-green-basic.png" alt="" style="width:100%; max-width:160px;" />
+          <h3 class="bb-h4">Basic</h3>
+          <p class="bb-body-sm">Perfect for small servers</p>
+          <div class="bb-display" style="font-size:var(--bb-text-2xl); margin:var(--bb-space-3) 0;">$4.99<span class="bb-body-sm">/mo</span></div>
+          <button class="bb-btn bb-btn--outline bb-btn--block">Get Started</button>
+        </div>
+        <div class="bb-card bb-card--pro">
+          <span class="bb-badge bb-badge--gold">Most Popular</span>
+          <img src="./assets/chest-gold-pro.png" alt="" style="width:100%; max-width:160px;" />
+          <h3 class="bb-h4">Pro</h3>
+          <p class="bb-body-sm">For growing communities</p>
+          <div class="bb-display" style="font-size:var(--bb-text-2xl); margin:var(--bb-space-3) 0;">$9.99<span class="bb-body-sm">/mo</span></div>
+          <button class="bb-btn bb-btn--primary bb-btn--block">Get Pro</button>
+        </div>
+        <div class="bb-card bb-card--max">
+          <img src="./assets/chest-purple-max.png" alt="" style="width:100%; max-width:160px;" />
+          <h3 class="bb-h4">Max</h3>
+          <p class="bb-body-sm">For serious owners</p>
+          <div class="bb-display" style="font-size:var(--bb-text-2xl); margin:var(--bb-space-3) 0;">$19.99<span class="bb-body-sm">/mo</span></div>
+          <button class="bb-btn bb-btn--purple bb-btn--block">Get Max</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="bb-h3">Console panel &amp; stats</h2>
+      <div class="bb-grid bb-grid--2" style="margin-top:var(--bb-space-4);">
+        <div class="bb-panel bb-panel--console">
+          <div class="bb-panel__header">
+            <span class="bb-h4" style="font-size:var(--bb-text-sm);"><span class="bb-status-dot"></span>&nbsp; Server Logs (Live)</span>
+          </div>
+          <div class="bb-panel__body">
+            [14:32:17] [INFO] KOBABOT v3.8.2 | Server Connected<br/>
+            [14:32:18] [INFO] Players Online: 24/100<br/>
+            [14:32:19] [INFO] Economy: Loaded (USD, EUR, BTC)<br/>
+            [14:32:21] [INFO] Auction System: Running<br/>
+            [14:32:25] [INFO] All Modules: Operational ✔
+          </div>
+        </div>
+        <div class="bb-grid" style="grid-template-columns: repeat(2,1fr); align-content:start;">
+          <div class="bb-stat"><span class="bb-stat__value">12,483</span><span class="bb-stat__label">Players</span></div>
+          <div class="bb-stat"><span class="bb-stat__value">12</span><span class="bb-stat__label">Servers</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" style="border-bottom:none;">
+      <h2 class="bb-h3">Mascot &amp; mobile tabbar</h2>
+      <div class="demo-row">
+        <img src="./assets/frank-mascot.png" alt="Frank the KOBA Bot mascot" style="width:140px;" />
+        <div class="bb-panel" style="max-width:360px; padding:0;">
+          <div class="bb-tabbar" style="position:static;">
+            <a class="bb-tabbar__item bb-tabbar__item--active" href="#">🏠<span>Home</span></a>
+            <a class="bb-tabbar__item" href="#">🛒<span>Shop</span></a>
+            <a class="bb-tabbar__item" href="#">🖥️<span>Servers</span></a>
+            <a class="bb-tabbar__item" href="#">🎧<span>Support</span></a>
+            <a class="bb-tabbar__item" href="#">•••<span>More</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
